@@ -29,16 +29,23 @@ content:
         label: 发布日期
         type: date
         required: true
+        format: "yyyy-MM-dd"
         default: "$CURRENT_DATE"
       - name: updatedDate
         label: 更新日期
         type: date
+        format: "yyyy-MM-dd"
       - name: tags
         label: 标签
-        type: list
-        default: [weekly]
-        item:
-          type: string
+        type: select
+        multiple: true
+        values:
+          - weekly
+          - coding
+          - reading
+          - gaming
+          - life
+          - tech
       - name: draft
         label: 草稿
         type: boolean
@@ -71,6 +78,7 @@ content:
         label: 发布日期
         type: date
         required: true
+        time: true
         default: "$CURRENT_DATETIME"
       - name: body
         label: 正文
