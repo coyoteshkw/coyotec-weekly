@@ -9,9 +9,11 @@ interface Props {
 }
 
 const {
-	content: { data },
+	content: { data, id },
 	readingTime,
 } = Astro.props;
+
+const editUrl = `https://github.com/coyoteshkw/coyotec-weekly/edit/main/src/content/post/${id}.md`;
 
 const dateTimeOptions: Intl.DateTimeFormatOptions = {
 	month: "long",
@@ -35,6 +37,13 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 {data.draft ? <span class="text-base text-red-500">(Draft)</span> : null}
 <h1 class="title">
 	{data.title}
+	<a class="ms-2 text-muted hover:text-accent align-middle" href={editUrl} rel="noreferrer" target="_blank" title="Edit on GitHub">
+		<svg aria-hidden="true" class="inline-block h-5 w-5" fill="none" focusable="false" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+			<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+			<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+		</svg>
+		<span class="sr-only">Edit on GitHub</span>
+	</a>
 </h1>
 <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
 	<p class="font-semibold">
