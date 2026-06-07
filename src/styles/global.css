@@ -1,5 +1,21 @@
 @layer theme, base, pagefind, components, utilities;
 
+/* Roboto Mono - consistent font across all devices */
+@font-face {
+	font-family: "Roboto Mono";
+	src: url("../assets/roboto-mono-regular.ttf") format("truetype");
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: "Roboto Mono";
+	src: url("../assets/roboto-mono-700.ttf") format("truetype");
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+}
+
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/preflight.css" layer(base);
 @import "tailwindcss/utilities.css" layer(utilities);
@@ -51,6 +67,7 @@
 
 /* you could refactor below to use light-dark(), depending on your target audience */
 @theme {
+	--font-mono: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 	--color-global-bg: oklch(98.48% 0 0);
 	--color-global-text: oklch(26.99% 0.0096 235.05);
 	--color-muted: oklch(44.6% 0.03 256.802);
