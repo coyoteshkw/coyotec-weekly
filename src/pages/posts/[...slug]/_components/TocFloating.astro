@@ -1,0 +1,228 @@
+---
+// TocFloating.astro — 悬浮文章目录
+// 宽屏：固定在内容右侧空白区域
+// 窄屏：通过右下角按钮展开底部面板
+---
+
+<div id="toc-root" style="display:none">
+  <!-- ===== 宽屏侧边栏 ===== -->
+  <aside
+    id="toc-sidebar"
+    class="hidden xl:block fixed z-40 w-48"
+    style="top:6rem;right:max(1rem,calc((100vw - 48rem - 2rem)/2 - 12rem - 2rem))"
+  >
+    <div
+      class="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3"
+    >
+      目录
+    </div>
+    <nav id="toc-nav-desktop" class="text-sm leading-relaxed"></nav>
+  </aside>
+
+  <!-- ===== 窄屏 FAB 按钮 ===== -->
+  <button
+    id="toc-fab"
+    class="xl:hidden fixed end-4 bottom-[7rem] z-40 flex size-10 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-lg transition-opacity hover:opacity-90"
+    aria-label="打开目录"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <line x1="8" y1="6" x2="21" y2="6" />
+      <line x1="8" y1="12" x2="21" y2="12" />
+      <line x1="8" y1="18" x2="21" y2="18" />
+      <line x1="3" y1="6" x2="3.01" y2="6" />
+      <line x1="3" y1="12" x2="3.01" y2="12" />
+      <line x1="3" y1="18" x2="3.01" y2="18" />
+    </svg>
+  </button>
+
+  <!-- ===== 窄屏遮罩 + 底部面板 ===== -->
+  <div
+    id="toc-overlay"
+    class="xl:hidden fixed inset-0 z-40 hidden bg-black/30 backdrop-blur-sm"
+  >
+    <aside
+      id="toc-drawer"
+      class="animate-slide-up absolute inset-x-0 bottom-0 max-h-[70vh] overflow-y-auto rounded-t-2xl border-t border-border bg-background p-5 shadow-2xl"
+    >
+      <div class="mb-4 flex items-center justify-between">
+        <span class="text-sm font-semibold text-foreground">目录</span>
+        <button
+          id="toc-close"
+          class="rounded p-1 text-muted-foreground transition-colors hover:text-foreground"
+          aria-label="关闭目录"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <nav id="toc-nav-mobile" class="text-base leading-relaxed"></nav>
+    </aside>
+  </div>
+</div>
+
+<style>
+  @keyframes slide-up {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  .animate-slide-up {
+    animation: slide-up 0.25s ease-out;
+  }
+
+  /* 侧边栏滚动条 — 细且低调 */
+  #toc-sidebar::-webkit-scrollbar {
+    width: 4px;
+  }
+  #toc-sidebar::-webkit-scrollbar-thumb {
+    background-color: var(--color-muted);
+    border-radius: 2px;
+  }
+
+  /* TOC 链接 hover 时左侧指示条 */
+  #toc-nav-desktop a {
+    border-left: 2px solid transparent;
+    padding-left: 0.75rem;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  #toc-nav-desktop a.toc-active {
+    border-left-color: var(--color-accent);
+  }
+</style>
+
+<script is:inline data-astro-rerun>
+  function initToc() {
+    const article = document.getElementById("article");
+    if (!article) return;
+
+    const headings = article.querySelectorAll("h2, h3");
+    if (headings.length < 2) return;
+
+    const root = document.getElementById("toc-root");
+    if (root) root.style.display = "";
+
+    // 确保每个标题都有 id
+    headings.forEach((h, i) => {
+      if (!h.id) {
+        h.id =
+          h.textContent
+            ?.toLowerCase()
+            .replace(/[^a-z0-9一-鿿]+/g, "-")
+            .replace(/(^-|-$)/g, "") || `heading-${i}`;
+      }
+    });
+
+    // 构建 TOC HTML
+    let tocHtml = '<ul class="space-y-1">';
+    headings.forEach((h) => {
+      const isH3 = h.tagName === "H3";
+      const text = h.textContent?.replace(/#$/, "").trim() || "";
+      tocHtml += `
+        <li class="${isH3 ? "ml-3" : ""}">
+          <a href="#${h.id}"
+            class="toc-link block truncate py-0.5 text-muted-foreground transition-colors hover:text-accent ${isH3 ? "text-xs" : ""}"
+            data-heading="${h.id}"
+            title="${text}">
+            ${text}
+          </a>
+        </li>`;
+    });
+    tocHtml += "</ul>";
+
+    // 填充桌面和移动端的 TOC
+    const desktop = document.getElementById("toc-nav-desktop");
+    const mobile = document.getElementById("toc-nav-mobile");
+    if (desktop) desktop.innerHTML = tocHtml;
+    if (mobile) mobile.innerHTML = tocHtml;
+
+    // 侧边栏：限制高度并允许滚动
+    const sidebar = document.getElementById("toc-sidebar");
+    if (sidebar) {
+      sidebar.style.maxHeight = "calc(100vh - 8rem)";
+      sidebar.style.overflowY = "auto";
+    }
+
+    // IntersectionObserver — 高亮当前标题
+    const links = document.querySelectorAll(".toc-link");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const link = document.querySelector(
+            `.toc-link[data-heading="${entry.target.id}"]`
+          );
+          if (entry.isIntersecting) {
+            links.forEach((l) => {
+              l.classList.remove("toc-active", "text-accent");
+              l.classList.add("text-muted-foreground");
+            });
+            if (link) {
+              link.classList.add("toc-active", "text-accent");
+              link.classList.remove("text-muted-foreground");
+            }
+          }
+        }
+      },
+      { rootMargin: "-80px 0px -70% 0px" }
+    );
+    headings.forEach((h) => observer.observe(h));
+
+    // ===== 窄屏交互 =====
+    const fab = document.getElementById("toc-fab");
+    const overlay = document.getElementById("toc-overlay");
+    const closeBtn = document.getElementById("toc-close");
+
+    function openToc() {
+      if (overlay) {
+        overlay.classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+      }
+    }
+    function closeToc() {
+      if (overlay) {
+        overlay.classList.add("hidden");
+        document.body.style.overflow = "";
+      }
+    }
+
+    fab?.addEventListener("click", openToc);
+    closeBtn?.addEventListener("click", closeToc);
+    overlay?.addEventListener("click", (e) => {
+      if (e.target === overlay) closeToc();
+    });
+
+    // 点击目录项后关闭面板
+    mobile?.querySelectorAll("a").forEach((a) => {
+      a.addEventListener("click", closeToc);
+    });
+    desktop?.querySelectorAll("a").forEach((a) => {
+      a.addEventListener("click", closeToc);
+    });
+  }
+
+  initToc();
+</script>

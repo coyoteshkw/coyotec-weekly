@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+# Cross-platform sed -i flag
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  SED_I=(-i "")
+else
+  SED_I=(-i)
+fi
+
+POSTS_DIR="src/content/posts"
+
+# ── Modified files: update modDatetime (only when draft is false) ──
+git diff --cached --name-status |
+  grep -iE "^M.*${POSTS_DIR}/.*\.(md|mdx)$" |
+  while read _ file; do
+    draft=$(awk '/^---$/{c++;next} c==1 && /^draft:/{print $2;exit}' "$file")
+    if [ "$draft" = "false" ]; then
+      now=$(date -u "+%Y-%m-%dT%H:%M:%SZ")
+      sed "${SED_I[@]}" "/^---$/,/^---$/s/^modDatetime:.*/modDatetime: $now/" "$file"
+      git add "$file"
+      echo "  ✓ $file — modDatetime updated"
+    fi
+  done
+
+# ── New files: set pubDatetime ──
+git diff --cached --name-status |
+  grep -iE "^A.*${POSTS_DIR}/.*\.(md|mdx)$" |
+  while read _ file; do
+    now=$(date -u "+%Y-%m-%dT%H:%M:%SZ")
+    sed "${SED_I[@]}" "/^---$/,/^---$/s/^pubDatetime:.*/pubDatetime: $now/" "$file"
+    git add "$file"
+    echo "  ✓ $file — pubDatetime set"
+  done
