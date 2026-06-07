@@ -1,0 +1,48 @@
+media:
+  public
+
+content:
+  - name: weekly
+    label: 周记
+    type: collection
+    path: src/content/posts
+    filename:
+      template: "{year}/{month}/{pubDatetime|date('MMdd')}.md"
+      field: pubDatetime
+    view:
+      primary: title
+      sort: ["pubDatetime", "desc"]
+      filters:
+        - field: draft
+          default: false
+    fields:
+      - name: title
+        label: 标题
+        type: string
+        required: true
+        max_length: 60
+      - name: description
+        label: 描述
+        type: text
+        required: true
+      - name: pubDatetime
+        label: 发布日期
+        type: date
+        required: true
+        format: "yyyy-MM-dd"
+        default: "$CURRENT_DATE"
+      - name: modDatetime
+        label: 更新日期
+        type: date
+        format: "yyyy-MM-dd"
+      - name: draft
+        label: 草稿
+        type: boolean
+        default: true
+      - name: tags
+        label: 标签
+        type: string
+        list: true
+      - name: body
+        label: 正文
+        type: rich-text
