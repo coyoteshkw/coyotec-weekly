@@ -39,13 +39,14 @@ content:
         label: 标签
         type: select
         multiple: true
-        values:
-          - weekly
-          - coding
-          - reading
-          - gaming
-          - life
-          - tech
+        options:
+          values:
+            - weekly
+            - coding
+            - reading
+            - gaming
+            - life
+            - tech
       - name: draft
         label: 草稿
         type: boolean
