@@ -1,25 +1,23 @@
 import type { APIContext, InferGetStaticPropsType } from "astro";
 import satori, { type SatoriOptions } from "satori";
 import sharp from "sharp";
-import RobotoMonoBold from "@/assets/roboto-mono-700.ttf";
-import RobotoMono from "@/assets/roboto-mono-regular.ttf";
 import { getAllPosts } from "@/data/post";
 import { getFormattedDate } from "@/utils/date";
 import { readCache, writeToCache } from "./_cacheUtil";
 import { ogMarkup } from "./_ogMarkup";
+import { getFont400, getFont700 } from "./_fetchFont";
 
 const ogOptions: SatoriOptions = {
-	// debug: true,
 	fonts: [
 		{
-			data: Buffer.from(RobotoMono),
-			name: "Roboto Mono",
+			data: Buffer.alloc(0), // placeholder, replaced in GET
+			name: "Noto Sans SC",
 			style: "normal",
 			weight: 400,
 		},
 		{
-			data: Buffer.from(RobotoMonoBold),
-			name: "Roboto Mono",
+			data: Buffer.alloc(0),
+			name: "Noto Sans SC",
 			style: "normal",
 			weight: 700,
 		},
@@ -32,6 +30,11 @@ type Props = InferGetStaticPropsType<typeof getStaticPaths>;
 
 export async function GET(context: APIContext) {
 	const { pubDate, title } = context.props as Props;
+
+	// Fetch fonts from Google CDN (cached in memory for the build duration)
+	const [font400, font700] = await Promise.all([getFont400(), getFont700()]);
+	ogOptions.fonts[0].data = font400;
+	ogOptions.fonts[1].data = font700;
 
 	// check the og-image cache
 	let pngBuffer = readCache(title, pubDate);
