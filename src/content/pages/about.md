@@ -1,16 +1,12 @@
 ---
-title: "About"
-description: "A bit about me and this blog."
+title: "关于"
+description: "关于萨查周记"
 ---
 
-Hi, I'm Coyotec.
+Hi，我是萨查。
 
-你好, 我是萨查
+这里是萨查周记 - 每周的记录、资源和感悟。
 
-这里是我的个人记录，编程学习，折腾，游戏，什么都有
-
-我写作是因为即使我写的粗糙，不完美，但是它有其意义，也是我的生活记录
-
-Nice to meet ya.
+更多内容请访问主站：[萨查日志](https://coyotec-blog.pages.dev)
 
 Email: [coyoteshkw@proton.me](mailto:coyoteshkw@proton.me)
