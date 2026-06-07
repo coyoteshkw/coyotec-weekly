@@ -119,6 +119,12 @@
 		navigation: auto;
 	}
 
+	/* Prevent white flash during navigation in dark mode */
+	&[data-theme="dark"]::view-transition-old(root) {
+		animation: none;
+		opacity: 0;
+	}
+
 	/* Astro image responsive styles, modified from -> https://docs.astro.build/en/guides/images/#responsive-image-styles */
 	:where([data-astro-image]) {
 		object-fit: var(--fit);

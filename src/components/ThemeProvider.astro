@@ -1,5 +1,5 @@
-{/* Inlined to avoid FOUC. This is a parser blocking script. */}
-<script is:inline>
+{/* Inlined to avoid FOUC. A render-blocking script. */}
+<script is:inline blocking="render">
 	const lightModePref = window.matchMedia("(prefers-color-scheme: light)");
 
 	function getUserPref() {
