@@ -35,18 +35,6 @@ content:
         label: 更新日期
         type: date
         format: "yyyy-MM-dd"
-      - name: tags
-        label: 标签
-        type: select
-        multiple: true
-        options:
-          values:
-            - weekly
-            - coding
-            - reading
-            - gaming
-            - life
-            - tech
       - name: draft
         label: 草稿
         type: boolean
