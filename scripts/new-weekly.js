@@ -26,7 +26,7 @@ function getISOWeek(d) {
 
 const weekNum = getISOWeek(now);
 const title = `${year} 第${weekNum}周`;
-const filename = `${month}-${day}.mdx`;
+const filename = `${month}-${day}.md`;
 const dir = path.join("src", "content", "post", String(year), month);
 const filepath = path.join(dir, filename);
 

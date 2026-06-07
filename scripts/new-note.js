@@ -6,7 +6,7 @@ const publishDate = now.toISOString();
 
 const dir = path.join("src", "content", "note");
 const ts = now.toISOString().replace(/[:.]/g, "-").split("T")[0];
-const filename = `${ts}.mdx`;
+const filename = `${ts}.md`;
 const filepath = path.join(dir, filename);
 
 const frontmatter = `---
