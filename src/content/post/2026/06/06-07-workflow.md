@@ -1,7 +1,9 @@
 ---
 title: "内容创建工作流"
 description: "周记和笔记的日常创建流程"
-publishDate: "2026-06-07T15:15:51.393Z"
+publishDate: "2026-06-07"
+tags: ["weekly"]
+draft: true
 ---
 
 ## 创建新周记
