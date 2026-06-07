@@ -4,6 +4,7 @@ import IconUnderline from "@/assets/icons/IconUnderline.svg";
 import IconMenuDeep from "@/assets/icons/IconMenuDeep.svg";
 import IconArchive from "@/assets/icons/IconArchive.svg";
 import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
+import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
 import IconSearch from "@/assets/icons/IconSearch.svg";
 import IconMoon from "@/assets/icons/IconMoon.svg";
 import IconX from "@/assets/icons/IconX.svg";
@@ -96,6 +97,16 @@ const isActive = (path: string) => {
             class:list={{ "active-nav": isActive("/about") }}
           >
             {t.nav.about}
+          </a>
+        </li>
+        <li class="col-span-2">
+          <a
+            href="https://coyotec-blog.pages.dev"
+            target="_blank"
+            class="inline-flex items-center gap-1"
+          >
+            Blog
+            <IconArrowRight class="inline-block size-4" />
           </a>
         </li>
         {
