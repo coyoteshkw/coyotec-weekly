@@ -15,7 +15,7 @@ description: "周记和笔记的日常创建流程"
 pnpm weekly
 ```
 
-自动生成 `src/content/post/YYYY/MM/MM-DD.md`，内容骨架已写好：
+自动生成 `src/content/posts/YYYY/MM/MM-DD.md`，内容骨架已写好：
 
 - 标题自动填 "2026 第XX周"（ISO 周数）
 - 发布日期填当天
