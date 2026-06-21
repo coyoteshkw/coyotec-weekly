@@ -1,0 +1,438 @@
+---
+/**
+ * 点赞按钮组件（双模式自适应）
+ *
+ * 宽屏 (xl+)：右下角圆形悬浮按钮
+ * 窄屏 (<xl)：内联胶囊按钮，在文章底部与分享同行
+ *
+ * 交互：点击后即时乐观更新（数量 +/-1），爱心弹跳 + 涟漪光环动效，
+ *       后台异步同步 Supabase，失败自动回退。
+ *
+ * @example
+ * <LikeButton pagePath="posts/games/minecraft" />
+ */
+type Props = {
+  /** 文章唯一路径标识，由父组件在构建时传入 */
+  pagePath: string;
+};
+
+const { pagePath } = Astro.props;
+---
+
+<like-button
+  style="display:contents"
+  data-page-path={pagePath}
+>
+  <!-- ========== 宽屏：右下角悬浮圆形按钮 ========== -->
+  <div class="like-floating hidden xl:flex fixed z-30 flex-col items-center gap-2"
+    style="bottom:2rem; right:max(2.5rem, calc((100vw - 48rem - 2rem)/2 - 13rem - 2rem))">
+    <!-- 气泡提示框 -->
+    <div class="like-tooltip pointer-events-none absolute bottom-full mb-2 whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium opacity-0 transition-opacity duration-300"
+      style="background:#fff;color:#282728;left:50%;transform:translateX(-50%);box-shadow:0 2px 8px rgba(0,0,0,0.12)">
+      <span class="like-tooltip-text">点个赞让我知道你来过~</span>
+      <div class="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent" style="border-top-color:#fff"></div>
+    </div>
+    <button
+      class="like-floating-btn relative flex size-12 items-center justify-center rounded-full border-2 shadow-lg transition-all duration-300 ease-out"
+      aria-label="点赞"
+      disabled
+    >
+      <svg
+        class="like-floating-heart relative z-10 size-5 transition-transform"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+      </svg>
+    </button>
+    <span class="like-floating-count text-xs font-semibold opacity-60">⋯</span>
+  </div>
+
+  <!-- ========== 窄屏：内联胶囊按钮 ========== -->
+  <div class="like-inline xl:hidden inline-flex items-center gap-1.5 relative">
+    <!-- 气泡提示框（窄屏专用） -->
+    <div class="like-tooltip-inline pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium opacity-0 transition-opacity duration-300"
+      style="background:#fff;color:#282728;box-shadow:0 2px 8px rgba(0,0,0,0.12)">
+      <span class="like-tooltip-inline-text">点个赞吗~</span>
+      <div class="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent" style="border-top-color:#fff"></div>
+    </div>
+    <button
+      class="like-inline-btn group relative inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-all duration-200 active:scale-95 disabled:cursor-wait disabled:opacity-50"
+      aria-label="点赞"
+      disabled
+    >
+      <svg
+        class="like-inline-heart size-4 transition-transform group-active:scale-90"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+      </svg>
+      <span class="like-inline-count">⋯</span>
+    </button>
+  </div>
+</like-button>
+
+<style>
+  @keyframes like-heart-pop {
+    0%   { transform: scale(0.8); }
+    40%  { transform: scale(1.4); }
+    70%  { transform: scale(0.9); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes like-ring-pulse {
+    0% {
+      opacity: 0.6;
+      transform: scale(0.8);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.8);
+    }
+  }
+
+  @keyframes like-inline-pop {
+    0%   { transform: scale(1); }
+    30%  { transform: scale(1.25); }
+    60%  { transform: scale(0.9); }
+    100% { transform: scale(1); }
+  }
+
+  .like-ring {
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 2px solid #f43f5e;
+    animation: like-ring-pulse 0.6s ease-out forwards;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .like-floating-heart.pop {
+    animation: like-heart-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .like-inline-heart.pop {
+    animation: like-inline-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* ---- 气泡提示框 ---- */
+  .like-tooltip.show {
+    opacity: 1;
+  }
+
+  .like-tooltip-inline.show {
+    opacity: 1;
+  }
+
+  /* ---- 宽屏悬浮按钮 ---- */
+  .like-floating-btn {
+    border-color: var(--color-border, #ece9e9);
+    background: var(--color-background, #fdfdfd);
+    color: #d1d5db;
+  }
+  .like-floating-btn:hover {
+    color: #f43f5e;
+    border-color: #fecdd3;
+    transform: scale(1.08);
+  }
+  .like-floating-btn:active {
+    transform: scale(0.92);
+  }
+  .like-floating-btn.like-liked {
+    color: #f43f5e;
+    border-color: #e11d48;
+    background: #fff1f2;
+  }
+  .like-floating-btn.like-liked .like-floating-heart {
+    fill: #f43f5e;
+    stroke: #f43f5e;
+  }
+  :root[data-theme="dark"] .like-floating-btn {
+    color: #6b7280;
+  }
+  :root[data-theme="dark"] .like-floating-btn:hover {
+    color: #f43f5e;
+    border-color: #9f1239;
+  }
+  :root[data-theme="dark"] .like-floating-btn.like-liked {
+    color: #f43f5e;
+    border-color: #e11d48;
+    background: #4c0519;
+  }
+
+  /* ---- 窄屏内联按钮 ---- */
+  .like-inline-btn {
+    border-color: var(--color-border, #ece9e9);
+    background: var(--color-background, #fdfdfd);
+    color: var(--color-muted-foreground, #6b7280);
+  }
+  .like-inline-btn:hover {
+    color: #f43f5e;
+    border-color: #fecdd3;
+  }
+  .like-inline-btn.like-liked {
+    color: #f43f5e;
+    border-color: #fecdd3;
+    background: #fff1f2;
+  }
+  .like-inline-btn.like-liked .like-inline-heart {
+    fill: #f43f5e;
+    stroke: #f43f5e;
+  }
+  :root[data-theme="dark"] .like-inline-btn:hover {
+    border-color: #9f1239;
+  }
+  :root[data-theme="dark"] .like-inline-btn.like-liked {
+    border-color: #9f1239;
+    background: #4c0519;
+  }
+</style>
+
+<script>
+  import type { LikeStatus } from "@/lib/like-api";
+  import { isSupabaseReady, getLikeStatus, toggleLike } from "@/lib/like-api";
+
+  (function init() {
+    document.addEventListener("astro:page-load", mountOnce);
+  })();
+
+  function mountOnce() {
+    const root = document.querySelector<HTMLElement>("like-button");
+    if (!root) return;
+    const pagePath = root.dataset.pagePath;
+    if (!pagePath || !isSupabaseReady) return;
+    if (root.dataset.mounted === "true") return;
+    root.dataset.mounted = "true";
+
+    const fBtn = root.querySelector<HTMLButtonElement>(".like-floating-btn")!;
+    const iBtn = root.querySelector<HTMLButtonElement>(".like-inline-btn")!;
+    const fHeart = root.querySelector<SVGElement>(".like-floating-heart")!;
+    const iHeart = root.querySelector<SVGElement>(".like-inline-heart")!;
+    const fCount = root.querySelector<HTMLElement>(".like-floating-count")!;
+    const iCount = root.querySelector<HTMLElement>(".like-inline-count")!;
+
+    let liked = false;
+    let likeCount = 0;
+    let pending: Promise<unknown> | null = null;
+
+    // 气泡提示（仅宽屏）
+    const tooltip = root.querySelector<HTMLElement>(".like-tooltip")!;
+    const tooltipText = root.querySelector<HTMLElement>(".like-tooltip-text")!;
+    let tooltipTimer: ReturnType<typeof setTimeout> | null = null;
+    let tooltipShown = false;
+    let scrollListener: (() => void) | null = null;
+
+    // 气泡提示（窄屏）
+    const tooltipInline = root.querySelector<HTMLElement>(".like-tooltip-inline")!;
+    const tooltipInlineText = root.querySelector<HTMLElement>(".like-tooltip-inline-text")!;
+    let tooltipInlineTimer: ReturnType<typeof setTimeout> | null = null;
+    let tooltipInlineShown = false;
+
+    // 1. 加载真实数据
+    getLikeStatus(pagePath).then(s => {
+      liked = s.liked;
+      likeCount = s.likeCount;
+      renderAll();
+    }).catch(e => {
+      console.warn("点赞状态加载失败:", e);
+      fCount.textContent = iCount.textContent = "—";
+    });
+
+    // 2. 启用按钮 + 滚动检测气泡
+    [fBtn, iBtn].forEach(b => {
+      b.disabled = false;
+      b.addEventListener("click", handleLike);
+    });
+
+    // 阅读过半检测（仅宽屏、未点过赞时）
+    setupScrollTooltip();
+
+    // 3. 乐观更新 + 后台同步（5s 冷却，防连点）
+    const COOLDOWN_MS = 5000;
+    let cooldownTimer: ReturnType<typeof setTimeout> | null = null;
+
+    async function handleLike() {
+      if (pending || cooldownTimer) return;
+      const prevLiked = liked;
+      const prevCount = likeCount;
+
+      liked = !prevLiked;
+      likeCount = prevLiked ? Math.max(0, prevCount - 1) : prevCount + 1;
+      renderAll();
+
+      // 气泡：点赞后显示谢谢，点赞后立刻清计时器防止再弹出
+      if (liked) {
+        dismissTooltip();
+        showTooltip("谢谢！^_^", true);
+        showTooltipInline("谢谢！^_^", true);
+      }
+
+      // 动效：爱心弹跳 + 涟漪光环
+      playAnim(fBtn, fHeart);
+
+      pending = toggleLike(pagePath!);
+      try {
+        const status = await pending as LikeStatus | null;
+        pending = null;
+        if (status) {
+          liked = status.liked;
+          likeCount = status.likeCount;
+        } else {
+          revert();
+        }
+      } catch {
+        revert();
+        pending = null;
+      }
+      renderAll();
+
+      // 5s 冷却，期间按钮不可操作（添加/取消都是）
+      setCooldown();
+
+      function revert() { liked = prevLiked; likeCount = prevCount; }
+    }
+
+    function setCooldown() {
+      [fBtn, iBtn].forEach(b => { b.disabled = true; });
+      cooldownTimer = setTimeout(() => {
+        cooldownTimer = null;
+        [fBtn, iBtn].forEach(b => { b.disabled = false; });
+      }, COOLDOWN_MS);
+    }
+
+    // 4. 渲染
+    function renderAll() {
+      [ [fBtn, fHeart, fCount], [iBtn, iHeart, iCount] ].forEach(
+        ([btn, heart, count]) => {
+          const b = btn as HTMLElement;
+          const h = heart as SVGElement;
+          const c = count as HTMLElement;
+          c.textContent = String(likeCount);
+          b.classList.toggle("like-liked", liked);
+          h.setAttribute("fill", liked ? "#f43f5e" : "none");
+          h.setAttribute("stroke", liked ? "#f43f5e" : "currentColor");
+          b.setAttribute("aria-label", liked ? "取消点赞" : "点赞");
+        }
+      );
+    }
+
+    // 5. 动效
+    function playAnim(btn: HTMLElement, heart: SVGElement) {
+      // 爱心弹跳
+      heart.classList.remove("pop");
+      (heart as unknown as HTMLElement).offsetWidth;
+      heart.classList.add("pop");
+
+      if (!liked) return;
+
+      // 涟漪光环
+      const ring = document.createElement("div");
+      ring.className = "like-ring";
+      btn.appendChild(ring);
+      setTimeout(() => ring.remove(), 600);
+    }
+
+    // ---- 气泡 ----
+    function setupScrollTooltip() {
+      if (tooltipShown || liked) return;
+
+      const article = document.getElementById("article");
+      if (!article) return;
+
+      scrollListener = () => {
+        if (tooltipShown || liked) {
+          // 已弹过或已点过赞，解除监听
+          if (scrollListener) {
+            document.removeEventListener("scroll", scrollListener);
+            scrollListener = null;
+          }
+          return;
+        }
+
+        const articleRect = article.getBoundingClientRect();
+        const articleMid = articleRect.top + articleRect.height * 0.5;
+        const viewMid = window.innerHeight * 0.5;
+
+        if (articleMid < viewMid) {
+          // 文章已滚动过半
+          showTooltip("点个赞让我知道你来过~");
+          if (scrollListener) {
+            document.removeEventListener("scroll", scrollListener);
+            scrollListener = null;
+          }
+        }
+      };
+
+      document.addEventListener("scroll", scrollListener, { passive: true });
+
+      // 窄屏也用 IntersectionObserver 检测按钮可见
+      setupInlineObserver();
+    }
+
+    function setupInlineObserver() {
+      if (tooltipInlineShown || liked) return;
+
+      const target = iBtn.closest(".like-inline") as HTMLElement;
+      const observer = new IntersectionObserver((entries) => {
+        if (tooltipInlineShown || liked) {
+          observer.disconnect();
+          return;
+        }
+        if (entries[0]?.isIntersecting) {
+          showTooltipInline("点个赞吗~");
+          observer.disconnect();
+        }
+      }, { threshold: 0 });
+
+      observer.observe(target);
+    }
+
+    function showTooltipInline(text: string, autoHide = false) {
+      if (tooltipInlineShown && !autoHide) return;
+      tooltipInlineShown = true;
+      tooltipInlineText.textContent = text;
+      tooltipInline.classList.add("show");
+
+      if (tooltipInlineTimer) clearTimeout(tooltipInlineTimer);
+      tooltipInlineTimer = setTimeout(() => {
+        tooltipInline.classList.remove("show");
+        tooltipInlineTimer = null;
+      }, autoHide ? 2000 : 10000);
+    }
+
+    function showTooltip(text: string, autoHide = false) {
+      if (tooltipShown && !autoHide) return; // 已经弹过且不是"谢谢"这种强制显示
+      tooltipShown = true;
+      tooltipText.textContent = text;
+      tooltip.classList.add("show");
+
+      // 清除旧计时
+      if (tooltipTimer) clearTimeout(tooltipTimer);
+
+      tooltipTimer = setTimeout(() => {
+        tooltip.classList.remove("show");
+        tooltipTimer = null;
+      }, autoHide ? 2000 : 10000);
+    }
+
+    function dismissTooltip() {
+      if (tooltipTimer) clearTimeout(tooltipTimer);
+      tooltipTimer = null;
+      // 解绑滚动监听
+      if (scrollListener) {
+        document.removeEventListener("scroll", scrollListener);
+        scrollListener = null;
+      }
+    }
+  }
+</script>

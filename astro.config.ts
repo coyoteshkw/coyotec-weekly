@@ -89,6 +89,16 @@ export default defineConfig({
         context: "client",
         optional: true,
       }),
+      PUBLIC_SUPABASE_URL: envField.string({
+        access: "public",
+        context: "client",
+        optional: true,
+      }),
+      PUBLIC_SUPABASE_ANON_KEY: envField.string({
+        access: "public",
+        context: "client",
+        optional: true,
+      }),
     },
   },
   experimental: {
