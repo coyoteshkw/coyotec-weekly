@@ -1,0 +1,82 @@
+---
+author: coyoteshkw
+pubDatetime: 2026-06-21
+title: 2026 第25周 - 博客、Docker与介不到的桌宠
+draft: false
+tags: ["weekly"]
+description: 白天想，夜里哭，做梦都想做桌宠
+---
+
+## 本周做了什么
+- 博客
+  - 对旧域名做了批量重定向（Cloudflare）
+  - 添加点赞功能，感觉比显示浏览量更不那么扎心一点，具体过程看[博客](https://coyoteshkw.com/posts/tech-play/astro-blog-zero-to-live/) 
+- 为Minecraft做了群服互联，方便请输入文本时大伙的交流。利用了[Easybot](https://www.mcmod.cn/class/24110.html)和[Napcat](https://napneko.github.io/config/basic)，上线较为顺利，Docker立大功，可能会单开一个博客讲讲，也可能不会
+- 尝试利用AI学习Docker的基本知识，一路讲到了Compose，然后搭了一个Wordpress放在服务器上测试，确实能用，太牛了
+- 有一次尝试制作桌宠，失败，感觉要做的东西有点多，还需要用到Unity，内存不够用根本
+
+## 收集的资源
+
+### [supabase](https://supabase.com/) - Postgres远程数据库
+在添加博客点赞功能时用到的远程Postgres数据库，感觉挺不错的。和Turso坐一桌
+![supabase image](https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1781793678288_image.png)
+
+### [files.md](files.md) - 简单小巧但功能齐全的md笔记本
+Obsidian哪里都好，但是臃肿，功能琳琅满目，反倒无所适从。长期以来我更多使用Vim、MarkEdit等更轻量的软件，而不是Ob
+
+这个时候files.md打动了我，一个在浏览器里使用的markdown记事本，打开速度快，没有任何心智压力。它还添加了快速记录功能，方便你迅速输出想法和待办，后续再处理
+
+我通过坚果云把它同步到云端，避免内容丢失
+
+![image.png](https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782039490288_image.png)
+![image.png](https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782040033030_image.png)
+
+## MarkEdit - Mac原生MD应用
+
+和上面的一样，极度轻量和小巧，不过它默认不预览图片，需要外装`markdown-preview`插件预览
+
+但是使用它的理由很朴素：它很漂亮。小Mark，你很漂亮😋
+
+![image.png](https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782039706676_image.png)
+
+除了漂亮，在编辑上的基础功能也一应俱全，编辑器上色特别舒适，漂亮的同时，小Edit还这么努力！
+
+![image.png](https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782039844441_image.png)
+
+通常搭配files.md使用，在上传博客之前过一遍排版。也用来写网课笔记
+
+和vscode或Obsidian相比，这类软件完全没有绝对优势，但对我来说，胜在**快捷、美观、做好一件事**
+
+### [LinuxMirrors](https://linuxmirrors.cn/) - Linux系统一键换源
+> GNU/Linux 更换系统软件源脚本及 Docker 安装与换源脚本
+
+在安装Easybot和Napcat时被文档推荐使用了，再也不用担心Docker安装难、下载慢的问题。也可以针对Linux软件安装器进行换源
+
+![image.png](https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782047813936_image.png)
+
+### [Dockitty](https://apps.apple.com/us/app/dockitty-a-cat-in-your-dock/id6743999434?mt=12) - Dock栏宠物！
+想要桌宠想疯了的情况下找到的。免费可以用一只黑猫猫，可以吃掉你给它的文件，也可以进入自由模式，在你桌上随意奔跑，可拖拽
+
+![image.png](https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782046337396_image.png)
+![image.png](https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782046431377_image.png)
+![image.png](https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782046448580_image.png)
+
+### Runcat - 顶栏宠物！
+谁不想要一只在菜单栏里奔跑的猫猫呢？更好的是还可以监控CPU使用率？
+
+这是我最喜欢的Mac应用之一，特别是在应用开的比较多时，可以看看距离电脑爆炸还有多久。也很适合排查在完全不应该有性能消耗时是否有软件或网页在你的电脑上挖矿
+
+![image.png](https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782046556415_image.png)
+
+它也有一个[Windows版本](https://runcat-dev.github.io/RunCat365/)
+
+![demo.gif](https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782046794676_demo.gif)
+
+## 说点什么
+这周做的事情粗略感觉没有上周多，沉浸在做博客的世界里无法自拔了。今天更是看到了一个Obsidian博客，差点就叛变了，还好控制住了继续折腾的心。折腾的多不如老老实实写好几篇博客
+
+现在用图床愈发熟练了，配色snipaste的打码功能和检测窗口/界面元素，把Astro博客的部署写的到处是图片，虽然语言还是不太好
+
+有两天天天看到B站上大佬做到蛞蝓猫桌宠，进入了失心疯状态，真的好想全心开发一款蛞蝓猫桌宠，能有哪位大佬的让我用上也行😭要用到解包，还得安装Unity，在我内存所剩不多的Mac上完成这些操作实在是太困难了...而且我也没有动画相关的知识，完全一抹黑，只能把这个梦想放在心里了
+
+下一周开始要加大力度高强度学习了💪
