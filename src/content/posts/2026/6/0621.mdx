@@ -7,6 +7,8 @@ tags: ["weekly"]
 description: 白天想，夜里哭，做梦都想做桌宠
 ---
 
+import Carousel from "@/components/Carousel.astro";
+
 ## 本周做了什么
 - 博客
   - 对旧域名做了批量重定向（Cloudflare）
@@ -57,9 +59,11 @@ Obsidian哪里都好，但是臃肿，功能琳琅满目，反倒无所适从。
 ### [Dockitty](https://apps.apple.com/us/app/dockitty-a-cat-in-your-dock/id6743999434?mt=12) - Dock栏宠物！
 想要桌宠想疯了的情况下找到的。免费可以用一只黑猫猫，可以吃掉你给它的文件，也可以进入自由模式，在你桌上随意奔跑，可拖拽
 
-![image.png](https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782046337396_image.png)
-![image.png](https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782046431377_image.png)
-![image.png](https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782046448580_image.png)
+<Carousel dot-placement="bottom">
+  <img src="https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782046337396_image.png" alt="Dockitty Dock 栏展示" />
+  <img src="https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782046431377_image.png" alt="Dockitty 自由模式" />
+  <img src="https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782046448580_image.png" alt="Dockitty 吃文件" />
+</Carousel>
 
 ### Runcat - 顶栏宠物！
 谁不想要一只在菜单栏里奔跑的猫猫呢？更好的是还可以监控CPU使用率？

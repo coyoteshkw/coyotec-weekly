@@ -1,0 +1,466 @@
+---
+/**
+ * Carousel.astro - 可拖拽轮播图组件
+ *
+ * 功能特性：
+ * - 支持鼠标和触摸拖拽滑动
+ * - 自动播放（autoplay 属性控制）
+ * - 左右箭头导航
+ * - 小圆点指示器（通过 dot-placement 设置位置：bottom | top | left | right）
+ *  指示点置于图片区域内（绝对定位叠加），不占用额外空间
+ * - 适配 PC 和移动端
+ * - 参考 Naive UI 的轮播样式风格
+ *
+ * 用法（在 .mdx 文件中）：
+ *   <Carousel dot-placement="bottom" autoplay>
+ *     <img src="..." alt="..." />
+ *     <img src="..." alt="..." />
+ *   </Carousel>
+ *
+ * 属性：
+ *   dot-placement: "bottom" | "top" | "left" | "right"（默认 "bottom"）
+ *   autoplay: 布尔值，是否自动播放（默认 false）
+ */
+
+export interface Props {
+  "dot-placement"?: "bottom" | "top" | "left" | "right";
+  autoplay?: boolean;
+}
+
+const { "dot-placement": dotPlacement = "bottom", autoplay = false } = Astro.props;
+
+// 小圆点绝对定位的 class
+const dotsAbsoluteClasses: Record<string, string> = {
+  bottom: "bottom-3 left-1/2 -translate-x-1/2",
+  top: "top-3 left-1/2 -translate-x-1/2",
+  left: "top-1/2 left-3 -translate-y-1/2 flex-col",
+  right: "top-1/2 right-3 -translate-y-1/2 flex-col",
+};
+---
+
+<div
+  class="carousel-root relative w-full overflow-hidden rounded-xl"
+  data-placement={dotPlacement}
+  data-autoplay={autoplay ? "true" : "false"}
+>
+  <!-- 轮播视口：高度由图片自适应 -->
+  <div class="relative w-full overflow-hidden">
+    <!--
+      左箭头按钮
+      默认隐藏（opacity-0），hover 容器时显示
+      半透明毛玻璃背景，参考 Naive UI 风格
+    -->
+    <button
+      class="carousel-arrow carousel-arrow-left absolute left-3 z-20 flex size-9 cursor-pointer items-center justify-center rounded-full text-white opacity-0 backdrop-blur-xs transition-all duration-300 hover:opacity-100 hover:shadow-lg"
+      style="
+        background: rgba(0, 0, 0, 0.45);
+        top: 50%;
+        transform: translateY(-50%);
+      "
+      aria-label="上一张"
+    >
+      <svg viewBox="0 0 24 24" class="size-5 fill-current">
+        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+      </svg>
+    </button>
+
+    <!-- 右箭头按钮 -->
+    <button
+      class="carousel-arrow carousel-arrow-right absolute right-3 z-20 flex size-9 cursor-pointer items-center justify-center rounded-full text-white opacity-0 backdrop-blur-xs transition-all duration-300 hover:opacity-100 hover:shadow-lg"
+      style="
+        background: rgba(0, 0, 0, 0.45);
+        top: 50%;
+        transform: translateY(-50%);
+      "
+      aria-label="下一张"
+    >
+      <svg viewBox="0 0 24 24" class="size-5 fill-current">
+        <path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z" />
+      </svg>
+    </button>
+
+    <!--
+      滑动轨道：flex 容器，子项横向排列
+      JS 通过修改 translateX 实现滑动
+      cursor-grab 提示可拖拽
+    -->
+    <div
+      class="carousel-track flex h-full"
+      style="
+        transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        will-change: transform;
+      "
+    >
+      <!-- 每个子元素都会被包裹为 .carousel-slide -->
+      <slot />
+    </div>
+
+    <!--
+      小圆点指示器（绝对定位叠加在图片区域上，不占用外部空间）
+      位置由 dot-placement 控制
+    -->
+    <div
+      class:list={[
+        "carousel-dots absolute z-10 flex items-center gap-2",
+        dotsAbsoluteClasses[dotPlacement] || "bottom-3 left-1/2 -translate-x-1/2",
+      ]}
+    >
+      <!-- JS 动态生成圆点 -->
+    </div>
+  </div>
+</div>
+
+<script>
+  /**
+   * CarouselController - 轮播图交互控制器
+   *
+   * 职责：
+   * - 管理当前索引、滑动位置
+   * - 处理鼠标/触摸拖拽（含阻值判断）
+   * - 点击箭头切换
+   * - 点击圆点跳转 + 圆点高亮更新
+   * - 自动播放（hover 时暂停，离开恢复）
+   * - 窗口 resize 自动校正位置
+   */
+
+  class CarouselController {
+    root: HTMLElement;
+    track: HTMLElement;
+    slides!: HTMLElement[];
+    dotsContainer: HTMLElement;
+    dots: HTMLElement[] = [];
+    leftArrow: HTMLElement;
+    rightArrow: HTMLElement;
+    currentIndex = 0;
+    totalSlides = 0;
+    isDragging = false;
+    startX = 0;
+    currentTranslate = 0;
+    prevTranslate = 0;
+    autoplayTimer: ReturnType<typeof setInterval> | null = null;
+    autoplay: boolean;
+
+    constructor(root: HTMLElement) {
+      this.root = root;
+      this.track = root.querySelector(".carousel-track") as HTMLElement;
+      this.leftArrow = root.querySelector(".carousel-arrow-left") as HTMLElement;
+      this.rightArrow = root.querySelector(".carousel-arrow-right") as HTMLElement;
+      this.dotsContainer = root.querySelector(".carousel-dots") as HTMLElement;
+      this.autoplay = root.dataset.autoplay === "true";
+
+      // 初始化 slides：将 track 的直接子元素包裹为 .carousel-slide
+      this.initSlides();
+
+      if (this.totalSlides <= 1) {
+        // 单张图时隐藏箭头和圆点
+        this.leftArrow.style.display = "none";
+        this.rightArrow.style.display = "none";
+        this.dotsContainer.style.display = "none";
+        return;
+      }
+
+      // 生成小圆点
+      this.createDots();
+      // 绑定事件
+      this.bindEvents();
+      // 初始状态：圆点高亮第一个
+      this.updateDots();
+      // 启动自动播放
+      this.startAutoplay();
+    }
+
+    /** 将 track 的直接子元素包裹为 .carousel-slide 容器 */
+    initSlides(): void {
+      const childNodes = Array.from(this.track.children);
+      this.track.innerHTML = "";
+      this.slides = [];
+
+      for (const child of childNodes) {
+        if (child.nodeType === Node.TEXT_NODE) continue;
+        // 避免重复包裹：如果已经是 .carousel-slide 则跳过
+        if (child.classList && child.classList.contains("carousel-slide")) {
+          this.slides.push(child as HTMLElement);
+          continue;
+        }
+        const wrapper = document.createElement("div");
+        wrapper.className =
+          "carousel-slide min-w-0 shrink-0 grow-0 basis-full select-none";
+        wrapper.appendChild(child);
+        this.track.appendChild(wrapper);
+        this.slides.push(wrapper);
+      }
+
+      this.totalSlides = this.slides.length;
+    }
+
+    /** 创建小圆点按钮并插入容器 */
+    createDots(): void {
+      this.dotsContainer.innerHTML = "";
+      for (let i = 0; i < this.totalSlides; i++) {
+        const dot = document.createElement("button");
+        dot.className =
+          "carousel-dot size-2.5 cursor-pointer rounded-full border-none transition-all duration-300 bg-white/60 hover:bg-white/90";
+        dot.setAttribute("aria-label", `切换到第 ${i + 1} 张`);
+        dot.dataset.index = String(i);
+        this.dotsContainer.appendChild(dot);
+        this.dots.push(dot);
+      }
+    }
+
+    // ---- 获取视口宽度 ----
+    getSlideWidth(): number {
+      return this.track.clientWidth;
+    }
+
+    // ---- 导航 ----
+    goTo(index: number): void {
+      this.currentIndex = index;
+      const slideWidth = this.getSlideWidth();
+      this.currentTranslate = -index * slideWidth;
+      this.prevTranslate = this.currentTranslate;
+      this.setTrackPosition();
+      this.updateDots();
+      this.resetAutoplay();
+    }
+
+    next(): void {
+      this.goTo((this.currentIndex + 1) % this.totalSlides);
+    }
+
+    prev(): void {
+      this.goTo((this.currentIndex - 1 + this.totalSlides) % this.totalSlides);
+    }
+
+    setTrackPosition(): void {
+      this.track.style.transform = `translateX(${this.currentTranslate}px)`;
+    }
+
+    // ---- 更新小圆点高亮 ----
+    updateDots(): void {
+      this.dots.forEach((dot, index) => {
+        if (index === this.currentIndex) {
+          dot.className =
+            "carousel-dot size-2.5 cursor-pointer rounded-full border-none transition-all duration-300 bg-white scale-125";
+        } else {
+          dot.className =
+            "carousel-dot size-2.5 cursor-pointer rounded-full border-none transition-all duration-300 bg-white/60 hover:bg-white/90";
+        }
+      });
+    }
+
+    // ---- 事件绑定 ----
+    bindEvents(): void {
+      // 鼠标拖拽（绑定在图片上，指示点和空白区域不会触发）
+      this.slides.forEach((slide) => {
+        const img = slide.querySelector("img");
+        if (img) {
+          img.addEventListener("mousedown", this.onDragStart.bind(this));
+          img.addEventListener("dragstart", (e: Event) => e.preventDefault(), { passive: false });
+        }
+      });
+      window.addEventListener("mousemove", this.onDragMove.bind(this));
+      window.addEventListener("mouseup", this.onDragEnd.bind(this));
+
+      // 触摸拖拽（绑定在图片上）
+      this.slides.forEach((slide) => {
+        const img = slide.querySelector("img");
+        if (img) {
+          img.addEventListener("touchstart", this.onDragStart.bind(this), { passive: false });
+        }
+      });
+      this.track.addEventListener("touchmove", this.onDragMove.bind(this), {
+        passive: false,
+      });
+      this.track.addEventListener("touchend", this.onDragEnd.bind(this));
+
+      // 箭头点击
+      this.leftArrow.addEventListener("click", () => this.prev());
+      this.rightArrow.addEventListener("click", () => this.next());
+
+      // 圆点点击（事件委托）
+      this.dotsContainer.addEventListener("click", (e: MouseEvent) => {
+        const dot = (e.target as HTMLElement).closest(".carousel-dot");
+        if (dot) {
+          const idx = parseInt(dot.getAttribute("data-index") || "0", 10);
+          this.goTo(idx);
+        }
+      });
+
+      // hover 暂停自动播放
+      this.root.addEventListener("mouseenter", () => {
+        this.showArrows(true);
+        this.stopAutoplay();
+      });
+      this.root.addEventListener("mouseleave", () => {
+        this.showArrows(false);
+        this.startAutoplay();
+      });
+
+      // 窗口 resize 重新校正位置
+      window.addEventListener("resize", () => {
+        this.goTo(this.currentIndex);
+      });
+
+      // 键盘支持
+      this.root.addEventListener("keydown", (e: KeyboardEvent) => {
+        if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          this.prev();
+        }
+        if (e.key === "ArrowRight") {
+          e.preventDefault();
+          this.next();
+        }
+      });
+      this.root.setAttribute("tabindex", "0");
+      this.root.setAttribute("role", "region");
+      this.root.setAttribute("aria-label", "图片轮播");
+    }
+
+    showArrows(show: boolean): void {
+      this.leftArrow.style.display = "";
+      this.rightArrow.style.display = "";
+      if (show) {
+        this.leftArrow.style.opacity = "1";
+        this.rightArrow.style.opacity = "1";
+      } else {
+        this.leftArrow.style.opacity = "0";
+        this.rightArrow.style.opacity = "0";
+      }
+    }
+
+    // ---- 拖拽逻辑 ----
+    onDragStart(e: MouseEvent | TouchEvent): void {
+      // 只处理鼠标左键（button === 0）
+      if ("button" in e && e.button !== 0) return;
+      this.isDragging = true;
+      this.stopAutoplay();
+      this.track.style.transition = "none"; // 拖拽时去掉过渡动画，更跟手
+      const pos = this.getPosition(e);
+      this.startX = pos.x;
+      // 阻止浏览器默认拖拽图片产生虚影
+      if (e.cancelable) {
+        e.preventDefault();
+      }
+    }
+
+    onDragMove(e: MouseEvent | TouchEvent): void {
+      if (!this.isDragging) return;
+      // 阻止移动端滚动/拖动时的默认行为
+      if ("touches" in e) {
+        e.preventDefault();
+      }
+      const pos = this.getPosition(e);
+      const diff = pos.x - this.startX;
+      this.currentTranslate = this.prevTranslate + diff;
+      this.setTrackPosition();
+    }
+
+    onDragEnd(): void {
+      if (!this.isDragging) return;
+      this.isDragging = false;
+      this.track.style.transition =
+        "transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+      // 滑动超过 1/4 宽度即切换，否则回弹
+      const slideWidth = this.getSlideWidth();
+      const movedBy = this.currentTranslate - this.prevTranslate;
+      if (Math.abs(movedBy) > slideWidth * 0.25) {
+        if (movedBy < 0) {
+          this.next();
+        } else {
+          this.prev();
+        }
+      } else {
+        this.goTo(this.currentIndex);
+      }
+      this.startAutoplay();
+    }
+
+    getPosition(e: MouseEvent | TouchEvent): { x: number } {
+      if ("touches" in e) {
+        return { x: e.touches[0].clientX };
+      }
+      return { x: e.clientX };
+    }
+
+    // ---- 自动播放 ----
+    startAutoplay(): void {
+      if (!this.autoplay || this.totalSlides <= 1) return;
+      this.stopAutoplay();
+      this.autoplayTimer = setInterval(() => this.next(), 3000);
+    }
+
+    stopAutoplay(): void {
+      if (this.autoplayTimer) {
+        clearInterval(this.autoplayTimer);
+        this.autoplayTimer = null;
+      }
+    }
+
+    resetAutoplay(): void {
+      if (this.autoplay) {
+        this.stopAutoplay();
+        this.startAutoplay();
+      }
+    }
+  }
+
+  // 页面加载完成后初始化所有轮播实例
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".carousel-root").forEach((root) => {
+      new CarouselController(root as HTMLElement);
+    });
+  });
+</script>
+
+<style>
+  /* 轮播项内的媒体元素自适应填满容器 */
+  .carousel-slide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .carousel-slide img,
+  .carousel-slide video,
+  .carousel-slide picture img {
+    width: 100%;
+    height: auto;
+    display: block;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .carousel-slide {
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  /* 彻底禁止浏览器默认拖拽图片行为（虚影） */
+  /* 只有图片本身显示拖拽光标，指示点和空白区域显示默认光标 */
+  .carousel-track img {
+    cursor: grab;
+    pointer-events: auto;
+  }
+  .carousel-track img:active {
+    cursor: grabbing;
+  }
+  .carousel-track {
+    -webkit-user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+  }
+
+  /* 鼠标悬停时显示箭头 */
+  .carousel-root:hover .carousel-arrow {
+    opacity: 1 !important;
+  }
+
+  /* 移动端默认显示箭头（半透明） */
+  @media (hover: none) {
+    .carousel-arrow {
+      opacity: 0.7 !important;
+    }
+  }
+</style>
