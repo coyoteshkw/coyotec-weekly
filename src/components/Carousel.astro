@@ -405,12 +405,23 @@ const dotsAbsoluteClasses: Record<string, string> = {
     }
   }
 
-  // 页面加载完成后初始化所有轮播实例
-  document.addEventListener("DOMContentLoaded", () => {
+  // 初始化所有轮播实例
+  // 使用 astro:page-load 同时覆盖首次加载和客户端路由（View Transitions）切换
+  function initCarousels() {
     document.querySelectorAll(".carousel-root").forEach((root) => {
+      // 避免重复初始化
+      if ((root as any).__carouselInitialized) return;
+      (root as any).__carouselInitialized = true;
       new CarouselController(root as HTMLElement);
     });
-  });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initCarousels);
+  } else {
+    initCarousels();
+  }
+  document.addEventListener("astro:page-load", initCarousels);
 </script>
 
 <style>
