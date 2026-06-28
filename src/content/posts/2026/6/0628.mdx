@@ -1,0 +1,135 @@
+---
+author: coyoteshkw
+pubDatetime: 2026-06-28
+title: 2026 第26周 - Minecraft与SteamDeck
+draft: false
+tags: ["weekly"]
+description: 一入MC深似海
+---
+
+import Carousel from "@/components/Carousel.astro";
+import DownloadButton from "@/components/DownloadButton.astro";
+
+## 本周做了什么
+- 玩了一周的MC
+  - 开发MC屏幕键盘，适配steamdeck特殊场景
+  - 完成了机械动力地下小工作站
+  - 用区块加载器保持锅炉运作
+  - LogFilter正则过滤无用日志
+- 很烦躁地看TS博客开发视频，作者很好但是讲的太紧张了很结巴，不是熟手
+- 学习了一些Docker，了解如何迁移本地卷信息到服务器，并处理报错问题
+- 了解了一些很棒的个人博客，下面会一一介绍
+- 了解了如何通过SSH将远程服务器的本地预览接管到本地
+
+### Minecraft
+真是一个一入深似海的游戏，只要点击启动没有个把月下不得地，当然是在有mod的情况下，因为红石我玩不明白
+
+从一开始自己开服，到2G已无法承载我们这几个“建筑大神”“水车仙人”和“我寻思这能动”所以切换至专业MC服务器，再到一点点熟悉服务器管理流程、查bug、添加与更新mod、甚至为它做了一个小mod并且未来还打算做更多，感觉自己已经从一个小白蜕变为了...资深小白，Minecraft的世界还是太宏大了，我只是敲了一下门
+
+说到mod，我做了一个Minecraft屏幕键盘模组，但它的需求实在太过小众，我不知道还有谁需要它，大概也不会发到公网上来，需要这个mod需要达成以下需求：
+
+1. 有一台steamdeck，并且非要在上面玩Minecraft Java版
+2. 没有装controlify手柄模组或Moon control模组（自带键盘功能），或者是像我一样闪退无法使用
+3. Steam自带的虚拟键盘时好时坏，经常无法使用
+
+而我就是这个幸运的倒霉蛋，所以我要求AI开发这样一款屏幕键盘，它可以以某种方式被召唤，并且不会因为侵入式设计在奇怪的时候导致冲突闪退
+
+所以它没有用Mixin，没有任何前置依赖，就是能用
+
+在最开始是打算让它按K键可以打开聊天栏并显示，然后在物品栏界面只要点击搜索栏就显示，但无论我怎么让AI改，都无法实现点击触发。和controlify不同，我无法很便利地通过手柄点击来识别光标点到了哪里，只能在移出搜索栏时做到打开键盘...那有啥用？！
+
+在之后又经历了键盘无限启动等情况，转向了另一种方案，即在物品栏界面添加按钮来打开和关闭键盘，这立马收到了成效，但我仍然无法在物品栏界面搜索到正确的JEI界面，怀疑是自动定位到了原生搜索栏中，拼尽全力无法战胜，遂从Pi Agent转向Claude Code
+
+CC三下五除二地搞定了搜索问题，顺便又添加了键盘可拖动、点击音效、适配机械动力仓储连接站等功能（事实上全部和容器相关的界面都可以打开），不由得感慨同样底层都是Deepseek，为什么CC就这么聪明呢，提示词真是太厉害了
+
+如果在看这篇文章的你也遇到了如此棘手的情况，我把mod放在这里，以防你需要
+
+![按K在打开聊天栏时召唤键盘](https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782655631210_image.png)
+
+![Shift展示特殊键](https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782655675717_image.png)
+
+![打开键盘按钮和复位按钮](https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782655865711_image.png)
+
+**源代码在这里：** https://github.com/coyoteshkw/steamdeck-mc-screen-keyboard
+
+**jar下载在这里：** <DownloadButton href="https://github.com/coyoteshkw/steamdeck-mc-screen-keyboard/releases/download/v0.1.0/steamdeckkeyboard-0.1.0.jar" filename="steamdeckkeyboard-0.1.0.jar" />
+
+## 收集的资源
+### Bongocat - Steam免费挂卡应用
+Steam上的免费Bongo cat出Mac版了，应该是不久之前的事情
+
+其实我觉得这只猫没有原版和之前介绍的原生版本好看，但是它记录点击数以及换装设计的想法很不错，还可以与朋友联机敲字。决定尝试一阵子
+
+目前设置界面有些问题，字小到难以置信，M1 Air上眼睛都看瞎了
+
+### [Clawd on Desk](https://github.com/rullerzhou-afk/clawd-on-desk) - 桌面小Claude！
+虽然我现在更多使用Pi，但是这个第三方小C支持包括Pi在内的大量Agent，所以完全没问题
+
+唯一的缺点是没有支持aerospace的切换逻辑，所以只会在一个窗口内存在，最后变成了听提醒**任务完成啦！** 的赛博小狗
+
+<video autoplay muted loop playsinline style="max-width: 100%; border-radius: 8px;">
+  <source src="https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782660566420_claude-on-desk.mp4" type="video/mp4" />
+  您的浏览器不支持视频播放
+</video>
+
+### [Aerospace](https://github.com/nikitabobko/AeroSpace) - 优秀的Mac窗口管理器
+我已无法脱离这个应用用原生的Mac的窗口管理
+
+更新缓慢，但是目前没有找到任何足够强大的替代品，因此只能一直使用，小bug很多，像切窗口之类的，但是可以接受
+
+- 基于树范式的平铺窗口管理器
+- 灵感来自i3
+- 快速切换工作区，无需动画，也无需禁用SIP
+- 采用自身的虚拟工作区模拟，而非依赖原生 macOS Spaces
+- 纯文本配置（支持点文件）
+- CLI First（包括manpages和shell补全）
+- 不需要禁用SIP（系统完整性保护）
+- 多显示器支持（类i3）
+
+### [vnote](https://github.com/vnotex/vnote) - 原生C++开发MD笔记平台
+以前在Linux上用了很多年，后知后觉还支持Mac
+
+没有如今的所见即所得，但开源、持续更新、小功能非常丰富，支持自动添加标题论文排序
+
+![image.png](https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782656782803_image.png)
+
+### [StatIndet/daybook](https://daybook.page/) - 优秀的静态博客
+在浏览B站时刷到，审美惊为天人，功能非常完善，开箱支持大量组件，支持Cloudflare Pages，几乎把我拐走，如果不是我现在的网站已经很稳定了的话
+
+是一个将来我可能会使用的博客，非常优秀。可以给作者点[Star](https://github.com/StatIndet/daybook)
+
+> 作者最近在快速迭代，加了一些动效导致鼠标移动有延迟，所以还可以再观望一下稳定版本
+
+<Carousel dot-placement="bottom">
+  <img src="https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782657526582_image.png" alt="daybook 截图1" />
+  <img src="https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782656938567_image.png" alt="daybook 截图2" />
+  <img src="https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782657586522_image.png" alt="daybook 截图3" />
+</Carousel>
+
+### 重新编排 - 优秀的Astro主题
+开箱支持Astro多语，中英文混排舒服漂亮，也是一个将来可能会换的主题，但现在还是会使用Astro Paper，太多的折腾而忘了真正的输出不是一件好事
+
+<Carousel dot-placement="bottom">
+  <img src="https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782657115657_image.png" alt="重新编排 截图1" />
+  <img src="https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782657212049_image.png" alt="重新编排 截图2" />
+  <img src="https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782657295560_image.png" alt="重新编排 截图3" />
+</Carousel>
+
+### [hira.page](https://hira.page/zh-cn/) - 多语个人博客
+在寻找和参考新的astro博客主题时，找到了这位日本人的博客，从动效设计到理念都是我很喜欢的
+
+我尤其欣赏他在自己的work中把什么都放进去的那种心态，从自己2011年拍了300张食物摄影，到自己参加过落语比赛，还有一些小项目，看得我很开心。他简历的工作部分写得也比较简略，而且特意标明自己擅长和不擅长的。我真希望有一日可以像他这样自信地成为这样的人（也可能这就是可以一直在一家公司上班的老日的自信吧hhh）
+
+但总之他给了目前觉得自己写什么都写不好的我一种去写作的勇气，去写任何想写的事情的勇气
+
+这个博客目前支持中英日三转换，多亏了AI，他本人也是一个Astro多语言模板的作者
+
+这个作者明显没有打算把这个博客作为一个公开主题使用，所以说如果想克隆下来研究，势必会克隆下来一些不必要的东西，敬请注意。源码地址：https://github.com/psephopaiktes/hira.page
+
+<Carousel dot-placement="bottom">
+  <img src="https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782657758180_image.png" alt="hira.page 截图1" />
+  <img src="https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782657826397_image.png" alt="hira.page 截图2" />
+</Carousel>
+
+## 说点什么
+立志如买蚕，学知如抽丝
