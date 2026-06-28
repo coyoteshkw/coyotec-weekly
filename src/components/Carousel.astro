@@ -5,11 +5,10 @@
  * 功能特性：
  * - 支持鼠标和触摸拖拽滑动
  * - 自动播放（autoplay 属性控制）
- * - 左右箭头导航
- * - 小圆点指示器（通过 dot-placement 设置位置：bottom | top | left | right）
- *  指示点置于图片区域内（绝对定位叠加），不占用额外空间
- * - 适配 PC 和移动端
- * - 参考 Naive UI 的轮播样式风格
+ * - 左右箭头导航（主题色方形按钮，hover 填充动画）
+ * - 指示器：活性为胶囊形（pill）+ accent 辉光，非活性为小圆点
+ * - 指示器容器：毛玻璃胶囊底板，确保在各种图片上都可见
+ * - 适配 PC 和移动端，暗色主题自动适配
  *
  * 用法（在 .mdx 文件中）：
  *   <Carousel dot-placement="bottom" autoplay>
@@ -48,15 +47,11 @@ const dotsAbsoluteClasses: Record<string, string> = {
     <!--
       左箭头按钮
       默认隐藏（opacity-0），hover 容器时显示
-      半透明毛玻璃背景，参考 Naive UI 风格
+      主题色方形按钮，毛玻璃半透明背景，hover 时填充 accent 色
     -->
     <button
-      class="carousel-arrow carousel-arrow-left absolute left-3 z-20 flex size-9 cursor-pointer items-center justify-center rounded-full text-white opacity-0 backdrop-blur-xs transition-all duration-300 hover:opacity-100 hover:shadow-lg"
-      style="
-        background: rgba(0, 0, 0, 0.45);
-        top: 50%;
-        transform: translateY(-50%);
-      "
+      class="carousel-arrow carousel-arrow-left absolute left-3 z-20 flex size-9 cursor-pointer items-center justify-center rounded-lg border border-border bg-background/75 text-accent opacity-0 backdrop-blur-sm transition-all duration-300 hover:bg-accent hover:text-accent-foreground hover:border-accent hover:scale-105 active:scale-95"
+      style="top: 50%; transform: translateY(-50%);"
       aria-label="上一张"
     >
       <svg viewBox="0 0 24 24" class="size-5 fill-current">
@@ -66,12 +61,8 @@ const dotsAbsoluteClasses: Record<string, string> = {
 
     <!-- 右箭头按钮 -->
     <button
-      class="carousel-arrow carousel-arrow-right absolute right-3 z-20 flex size-9 cursor-pointer items-center justify-center rounded-full text-white opacity-0 backdrop-blur-xs transition-all duration-300 hover:opacity-100 hover:shadow-lg"
-      style="
-        background: rgba(0, 0, 0, 0.45);
-        top: 50%;
-        transform: translateY(-50%);
-      "
+      class="carousel-arrow carousel-arrow-right absolute right-3 z-20 flex size-9 cursor-pointer items-center justify-center rounded-lg border border-border bg-background/75 text-accent opacity-0 backdrop-blur-sm transition-all duration-300 hover:bg-accent hover:text-accent-foreground hover:border-accent hover:scale-105 active:scale-95"
+      style="top: 50%; transform: translateY(-50%);"
       aria-label="下一张"
     >
       <svg viewBox="0 0 24 24" class="size-5 fill-current">
@@ -96,12 +87,12 @@ const dotsAbsoluteClasses: Record<string, string> = {
     </div>
 
     <!--
-      小圆点指示器（绝对定位叠加在图片区域上，不占用外部空间）
-      位置由 dot-placement 控制
+      指示器（绝对定位叠加在图片区域上，不占用外部空间）
+      毛玻璃胶囊底板 + 主题色活性点
     -->
     <div
       class:list={[
-        "carousel-dots absolute z-10 flex items-center gap-2",
+        "carousel-dots absolute z-10 flex items-center gap-2 rounded-full bg-background/60 px-3 py-2 backdrop-blur-sm",
         dotsAbsoluteClasses[dotPlacement] || "bottom-3 left-1/2 -translate-x-1/2",
       ]}
     >
@@ -199,7 +190,7 @@ const dotsAbsoluteClasses: Record<string, string> = {
       for (let i = 0; i < this.totalSlides; i++) {
         const dot = document.createElement("button");
         dot.className =
-          "carousel-dot size-2.5 cursor-pointer rounded-full border-none transition-all duration-300 shadow-[0_0_0_1.5px_rgba(0,0,0,0.15)] bg-white/80 hover:bg-white";
+          "carousel-dot size-2 cursor-pointer rounded-full border-none bg-border transition-all duration-300 hover:bg-muted-foreground/50";
         dot.setAttribute("aria-label", `切换到第 ${i + 1} 张`);
         dot.dataset.index = String(i);
         this.dotsContainer.appendChild(dot);
@@ -235,15 +226,15 @@ const dotsAbsoluteClasses: Record<string, string> = {
       this.track.style.transform = `translateX(${this.currentTranslate}px)`;
     }
 
-    // ---- 更新小圆点高亮 ----
+    // ---- 更新小圆点高亮（活性胶囊形 + accent 辉光，非活性主题边框色小圆） ----
     updateDots(): void {
       this.dots.forEach((dot, index) => {
         if (index === this.currentIndex) {
           dot.className =
-            "carousel-dot size-2.5 cursor-pointer rounded-full border-none transition-all duration-300 bg-white scale-125 shadow-[0_0_0_1.5px_rgba(0,0,0,0.15)]";
+            "carousel-dot w-5 h-2 cursor-pointer rounded-full border-none bg-accent transition-all duration-300 shadow-[0_0_8px] shadow-accent/30";
         } else {
           dot.className =
-            "carousel-dot size-2.5 cursor-pointer rounded-full border-none transition-all duration-300 shadow-[0_0_0_1.5px_rgba(0,0,0,0.15)] bg-white/80 hover:bg-white";
+            "carousel-dot size-2 cursor-pointer rounded-full border-none bg-border transition-all duration-300 hover:bg-muted-foreground/50";
         }
       });
     }
