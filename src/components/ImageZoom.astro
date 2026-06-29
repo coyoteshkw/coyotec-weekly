@@ -9,127 +9,120 @@
 
 <div id="image-zoom-root"></div>
 
-<script>
-  /**
-   * 图片点击全屏放大
-   *
-   * 功能：
-   * - 点击文章中的图片，以全屏遮罩 + 居中显示
-   * - 点击遮罩 / 按 ESC / 滚轮关闭
-   * - 支持 enter/leave 过渡动画
-   */
+<script is:inline>
+  // 使用 is:inline 确保立即执行，不经过 Astro ESM 打包
+  // 此时 DOM 可能未完全就绪，用 requestAnimationFrame 等待
 
-  const overlay = document.createElement("div");
-  overlay.className = "image-zoom-overlay";
-  overlay.innerHTML = `<div class="image-zoom-container"><img class="image-zoom-img scale-90 opacity-0" /></div>`;
-  document.body.appendChild(overlay);
+  function setupImageZoom() {
+    if (document.querySelector("#image-zoom-overlay")) return;
 
-  const zoomedImg = overlay.querySelector(".image-zoom-img") as HTMLImageElement;
+    // 创建单例 overlay
+    const overlay = document.createElement("div");
+    overlay.id = "image-zoom-overlay";
+    overlay.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;max-width:95vw;max-height:95vh"><img class="image-zoom-img" style="max-width:100%;max-height:90vh;object-fit:contain;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,0.5);opacity:0;transform:scale(0.9);transition:opacity 0.3s ease, transform 0.3s ease" /></div>';
+    document.body.appendChild(overlay);
 
-  function open(src: string, alt: string): void {
-    zoomedImg.src = src;
-    zoomedImg.alt = alt;
-    overlay.classList.add("image-zoom-active");
-    requestAnimationFrame(() => {
-      zoomedImg.classList.add("scale-100", "opacity-100");
-      zoomedImg.classList.remove("scale-90", "opacity-0");
-    });
-  }
+    const zoomedImg = overlay.querySelector("img");
 
-  function close(): void {
-    overlay.classList.remove("image-zoom-active");
-    zoomedImg.classList.add("scale-90", "opacity-0");
-    zoomedImg.classList.remove("scale-100", "opacity-100");
-  }
+    // overlay 基础样式
+    overlay.style.cssText =
+      "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;cursor:zoom-out;transition:background 0.3s ease;pointer-events:none;opacity:0;";
 
-  // 点击遮罩或图片关闭
-  overlay.addEventListener("click", (e: MouseEvent) => {
-    if (e.target === overlay || e.target === overlay.firstElementChild) {
-      close();
+    function open(src, alt) {
+      zoomedImg.src = src;
+      zoomedImg.alt = alt || "";
+      overlay.style.pointerEvents = "auto";
+      overlay.style.opacity = "1";
+      overlay.style.background = "rgba(0,0,0,0.88)";
+      overlay.style.backdropFilter = "blur(6px)";
+      requestAnimationFrame(function () {
+        zoomedImg.style.opacity = "1";
+        zoomedImg.style.transform = "scale(1)";
+      });
     }
-  });
 
-  // 滚轮关闭
-  overlay.addEventListener("wheel", () => close(), { passive: true, once: true });
-
-  // ESC 关闭
-  document.addEventListener("keydown", (e: KeyboardEvent) => {
-    if (e.key === "Escape" && overlay.classList.contains("image-zoom-active")) {
-      close();
+    function close() {
+      overlay.style.background = "rgba(0,0,0,0)";
+      overlay.style.backdropFilter = "";
+      zoomedImg.style.opacity = "0";
+      zoomedImg.style.transform = "scale(0.9)";
+      overlay.addEventListener(
+        "transitionend",
+        function () {
+          overlay.style.opacity = "0";
+          overlay.style.pointerEvents = "none";
+        },
+        { once: true }
+      );
     }
-  });
 
-  // ---- 图片绑定 ----
-  function bindImages(): void {
-    const article = document.querySelector("#article");
-    if (!article) return;
+    // 点击遮罩关闭
+    overlay.addEventListener("click", function (e) {
+      if (e.target === overlay || e.target === overlay.firstElementChild) {
+        close();
+      }
+    });
 
-    const imgs = article.querySelectorAll("img");
-    imgs.forEach((img) => {
-      if ((img as any).__imageZoomBound) return;
-      if (img.closest(".carousel-root, .link-card")) return;
+    // 滚轮关闭
+    overlay.addEventListener("wheel", function () {
+      close();
+    }, { passive: true, once: true });
 
-      (img as any).__imageZoomBound = true;
-      img.style.cursor = "zoom-in";
+    // ESC 关闭
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && overlay.style.opacity === "1") {
+        close();
+      }
+    });
 
-      img.addEventListener("click", (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        const src = img.getAttribute("src");
-        if (src) {
-          const alt = img.getAttribute("alt") || "";
-          open(src, alt);
-        }
-      }, true); // capture phase
+    // 绑定文章图片
+    function bind() {
+      var article = document.querySelector("#article");
+      if (!article) return;
+      var imgs = article.querySelectorAll("img");
+      for (var i = 0; i < imgs.length; i++) {
+        var img = imgs[i];
+        if (img._zoomBound) continue;
+        if (img.closest(".carousel-root, .link-card")) continue;
+        img._zoomBound = true;
+        img.style.cursor = "zoom-in";
+
+        img.addEventListener(
+          "click",
+          function (evt) {
+            evt.stopPropagation();
+            evt.preventDefault();
+            var src = this.getAttribute("src");
+            if (src) open(src, this.getAttribute("alt") || "");
+          }.bind(img),
+          true
+        ); // capture phase
+      }
+    }
+
+    // 立即绑定 + 路由切换后重新绑定
+    requestAnimationFrame(function () {
+      requestAnimationFrame(bind);
+    });
+    document.addEventListener("astro:page-load", function () {
+      requestAnimationFrame(function () {
+        requestAnimationFrame(bind);
+      });
     });
   }
 
-  function init(): void {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(bindImages);
-    });
+  // 等 DOM 就绪
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupImageZoom);
+  } else {
+    setupImageZoom();
   }
-
-  init();
-  document.addEventListener("astro:page-load", init);
 </script>
 
 <style>
+  /* 万一 is:inline 没问题，这里只有参考价值 */
   .image-zoom-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: rgba(0, 0, 0, 0);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: zoom-out;
-    transition: background 0.3s ease;
-    pointer-events: none;
-    opacity: 0;
-  }
-
-  .image-zoom-overlay.image-zoom-active {
-    background: rgba(0, 0, 0, 0.88);
-    backdrop-filter: blur(6px);
-    pointer-events: auto;
-    opacity: 1;
-  }
-
-  .image-zoom-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    max-width: 95vw;
-    max-height: 95vh;
-  }
-
-  .image-zoom-img {
-    max-width: 100%;
-    max-height: 90vh;
-    object-fit: contain;
-    border-radius: 8px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
 </style>
