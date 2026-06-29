@@ -33,11 +33,12 @@
       zoomedImg.alt = alt || "";
       overlay.style.pointerEvents = "auto";
       overlay.style.opacity = "1";
-      overlay.style.background = "rgba(0,0,0,0.88)";
-      overlay.style.backdropFilter = "blur(6px)";
-      zoomedImg.style.background = "#fff";
+      overlay.style.background = "rgba(245,245,247,0.92)";
+      overlay.style.backdropFilter = "blur(12px) saturate(180%)";
       zoomedImg.style.boxShadow =
-        "0 0 0 1px rgba(255,255,255,0.12), 0 20px 60px rgba(0,0,0,0.5)";
+        "0 4px 24px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.08)";
+      zoomedImg.style.borderRadius = "8px";
+      zoomedImg.style.background = "transparent";
       requestAnimationFrame(function () {
         zoomedImg.style.opacity = "1";
         zoomedImg.style.transform = "scale(1)";
