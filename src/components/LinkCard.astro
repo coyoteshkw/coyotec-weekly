@@ -55,7 +55,7 @@ try {
           src={image}
           alt={title}
           loading="lazy"
-          class="link-card-thumb-img block h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          class="link-card-thumb-img block h-full w-full object-cover"
         />
       </div>
     )
@@ -129,22 +129,32 @@ try {
       width: 11rem /* 44 */;
     }
   }
+  /* 利用 Astro scoped attribute（[data-astro-cid-xxx]）提供足够特异性
+     选择器 .link-card-thumb-img[data-astro-cid-xxx] 特异性 0,2,0
+     超过 prose 的 article img（0,0,2），无需 !important */
   .link-card-thumb-img {
-    display: block !important;
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-    margin: 0 !important;
-    border-radius: 0 !important;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    margin: 0;
+    border-radius: 0;
   }
 
-  /* Favicon */
   .link-card-favicon {
-    display: inline-block !important;
-    width: 1rem !important;
-    height: 1rem !important;
-    margin: 0 !important;
-    border-radius: 0.125rem !important;
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    margin: 0;
+    border-radius: 0.125rem;
+  }
+
+  /* 兜底：LinkCard 内任何 img 都不受 prose 默认样式影响 */
+  .link-card img {
+    margin: 0;
+    border-radius: 0;
+    border: none;
+    transition: none;
   }
 
   /* 行数截断 */
