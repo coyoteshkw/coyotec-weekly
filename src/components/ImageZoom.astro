@@ -34,10 +34,8 @@
 
       overlay.appendChild(img);
 
-      // 遮罩空白处点击关闭——在创建时绑定，确保每次重建 overlay 都带上
-      overlay.addEventListener("click", (e) => {
-        if (e.target === overlay) close(overlay);
-      });
+      // 点击遮罩或图片本身均可关闭
+      overlay.addEventListener("click", () => close(overlay));
 
       document.body.appendChild(overlay);
       return overlay;
