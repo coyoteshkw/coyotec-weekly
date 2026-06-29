@@ -19,7 +19,7 @@
     // 创建单例 overlay
     const overlay = document.createElement("div");
     overlay.id = "image-zoom-overlay";
-    overlay.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;max-width:95vw;max-height:95vh"><img class="image-zoom-img" style="max-width:100%;max-height:90vh;object-fit:contain;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,0.5);opacity:0;transform:scale(0.9);transition:opacity 0.3s ease, transform 0.3s ease" /></div>';
+    overlay.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;max-width:95vw;max-height:95vh"><img class="image-zoom-img" style="max-width:100%;max-height:90vh;object-fit:contain;border-radius:8px;background:#fff;box-shadow:0 0 0 1px rgba(255,255,255,0.12),0 20px 60px rgba(0,0,0,0.5);opacity:0;transform:scale(0.9);transition:opacity 0.3s ease, transform 0.3s ease" /></div>';
     document.body.appendChild(overlay);
 
     const zoomedImg = overlay.querySelector("img");
@@ -35,6 +35,9 @@
       overlay.style.opacity = "1";
       overlay.style.background = "rgba(0,0,0,0.88)";
       overlay.style.backdropFilter = "blur(6px)";
+      zoomedImg.style.background = "#fff";
+      zoomedImg.style.boxShadow =
+        "0 0 0 1px rgba(255,255,255,0.12), 0 20px 60px rgba(0,0,0,0.5)";
       requestAnimationFrame(function () {
         zoomedImg.style.opacity = "1";
         zoomedImg.style.transform = "scale(1)";
