@@ -1,0 +1,146 @@
+---
+/**
+ * ImageZoom.astro - 图片点击全屏放大组件
+ *
+ * 在文章页面中让所有图片支持点击放大查看。
+ * 用法：放在 PostLayout 或 Layout 中即可自动生效。
+ */
+
+// 此组件不需要渲染任何额外 DOM，由 JS 动态创建遮罩层
+---
+
+<script>
+  /**
+   * 图片点击全屏放大
+   *
+   * 功能：
+   * - 点击文章中的图片，以全屏遮罩 + 居中显示
+   * - 点击遮罩 / 按 ESC / 滚动滚轮关闭
+   * - 图片过大时自适应屏幕
+   * - 支持过渡动画
+   */
+
+  class ImageZoom {
+    overlay: HTMLElement | null = null;
+    zoomedImg: HTMLElement | null = null;
+
+    constructor() {
+      this.bindEvents();
+    }
+
+    bindEvents(): void {
+      // 使用事件委托监听文章内所有图片点击
+      document.addEventListener("click", (e: MouseEvent) => {
+        const target = e.target as HTMLElement;
+        // 只处理文章正文内的图片，排除 LinkCard、Carousel 等组件内的图片
+        const article = target.closest("#article");
+        if (!article) return;
+        const img = target.closest("img");
+        if (!img) return;
+        // 排除已经在放大状态、或位于交互组件内的图片
+        if (img.closest(".carousel-slide, .link-card, .carousel-dots")) return;
+
+        e.stopPropagation();
+        this.open(img);
+      });
+
+      // ESC 关闭
+      document.addEventListener("keydown", (e: KeyboardEvent) => {
+        if (e.key === "Escape") this.close();
+      });
+    }
+
+    open(img: HTMLElement): void {
+      const src = img.getAttribute("src");
+      if (!src) return;
+
+      // 创建遮罩
+      const overlay = document.createElement("div");
+      overlay.className = "image-zoom-overlay";
+      overlay.innerHTML = `<div class="image-zoom-container"><img src="${src}" alt="${img.getAttribute("alt") || ""}" class="image-zoom-img" /></div>`;
+
+      document.body.appendChild(overlay);
+      this.overlay = overlay;
+      this.zoomedImg = overlay.querySelector(".image-zoom-img") as HTMLElement;
+
+      // 点击遮罩关闭
+      overlay.addEventListener("click", (e: MouseEvent) => {
+        if (e.target === overlay || (e.target as HTMLElement).classList.contains("image-zoom-container")) {
+          this.close();
+        }
+      });
+
+      // 滚轮关闭
+      overlay.addEventListener("wheel", () => this.close(), { passive: true });
+
+      // 触发进入动画
+      requestAnimationFrame(() => overlay.classList.add("image-zoom-active"));
+    }
+
+    close(): void {
+      if (!this.overlay) return;
+      this.overlay.classList.remove("image-zoom-active");
+      this.overlay.addEventListener("transitionend", () => {
+        this.overlay?.remove();
+        this.overlay = null;
+        this.zoomedImg = null;
+      }, { once: true });
+    }
+  }
+
+  // 页面加载时初始化
+  function init() {
+    new ImageZoom();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+  document.addEventListener("astro:page-load", init);
+</script>
+
+<style>
+  .image-zoom-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: zoom-out;
+    transition: background 0.3s ease;
+  }
+
+  .image-zoom-overlay.image-zoom-active {
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(4px);
+  }
+
+  .image-zoom-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 95vw;
+    max-height: 95vh;
+    padding: 1rem;
+  }
+
+  .image-zoom-img {
+    max-width: 100%;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .image-zoom-active .image-zoom-img {
+    opacity: 1;
+    transform: scale(1);
+  }
+</style>
