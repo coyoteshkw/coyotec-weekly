@@ -1,0 +1,155 @@
+---
+/**
+ * ImageZoom.astro - 文内图片点击放大
+ *
+ * 放在文章页中，自动对 #article 内的图片生效。
+ * 遮罩半透明磨砂，颜色根据 data-theme 明暗自动变化。
+ */
+---
+
+<script is:inline>
+  (function () {
+    const OVERLAY_ID = "image-zoom-overlay";
+
+    function currentTheme() {
+      return document.documentElement.getAttribute("data-theme") ?? "light";
+    }
+
+    function removeOverlay() {
+      const old = document.getElementById(OVERLAY_ID);
+      if (old) old.remove();
+    }
+
+    function createOverlay() {
+      removeOverlay();
+
+      const overlay = document.createElement("div");
+      overlay.id = OVERLAY_ID;
+      overlay.style.cssText =
+        "position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;cursor:zoom-out;opacity:0;pointer-events:none;transition:opacity 0.3s ease,background 0.3s ease;";
+
+      const img = document.createElement("img");
+      img.style.cssText =
+        "max-width:95vw;max-height:90vh;object-fit:contain;border-radius:8px;box-shadow:0 4px 24px rgba(0,0,0,0.15),0 1px 3px rgba(0,0,0,0.08);opacity:0;transform:scale(0.9);transition:opacity 0.3s ease,transform 0.3s ease;";
+
+      overlay.appendChild(img);
+
+      // 遮罩空白处点击关闭——在创建时绑定，确保每次重建 overlay 都带上
+      overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) close(overlay);
+      });
+
+      document.body.appendChild(overlay);
+      return overlay;
+    }
+
+    function getOverlay() {
+      return document.getElementById(OVERLAY_ID);
+    }
+
+    function open(overlay, src, alt) {
+      const img = overlay.querySelector("img");
+      if (!img) return;
+      img.src = src;
+      img.alt = alt ?? "";
+
+      const dark = currentTheme() === "dark";
+      overlay.style.background = dark
+        ? "rgba(20,20,22,0.88)"
+        : "rgba(240,242,244,0.88)";
+      overlay.style.backdropFilter = "blur(16px) saturate(180%)";
+      overlay.style.webkitBackdropFilter = "blur(16px) saturate(180%)";
+      overlay.style.pointerEvents = "auto";
+      overlay.style.opacity = "1";
+
+      requestAnimationFrame(() => {
+        img.style.opacity = "1";
+        img.style.transform = "scale(1)";
+      });
+    }
+
+    function close(overlay) {
+      const img = overlay.querySelector("img");
+      if (img) {
+        img.style.opacity = "0";
+        img.style.transform = "scale(0.9)";
+      }
+      overlay.style.background = "transparent";
+      overlay.style.backdropFilter = "";
+      overlay.style.webkitBackdropFilter = "";
+
+      let settled = false;
+      const onEnd = () => {
+        if (settled) return;
+        settled = true;
+        overlay.style.opacity = "0";
+        overlay.style.pointerEvents = "none";
+        overlay.removeEventListener("transitionend", onEnd);
+      };
+      overlay.addEventListener("transitionend", onEnd);
+      setTimeout(onEnd, 350);
+    }
+
+    function styleImages() {
+      const article = document.querySelector("#article");
+      if (!article) return;
+      article.querySelectorAll("img").forEach((img) => {
+        if (!img.closest(".link-card")) {
+          img.style.cursor = "zoom-in";
+        }
+      });
+    }
+
+    // ---- 一次性全局监听（通过 <html> dataset 持久化标记，避免 IIFE 重跑时累积） ----
+    const html = document.documentElement;
+
+    if (!html.dataset.zoomGlobalBound) {
+      html.dataset.zoomGlobalBound = "1";
+
+      // ESC 关闭
+      document.addEventListener("keydown", (e) => {
+        if (e.key !== "Escape") return;
+        const ov = getOverlay();
+        if (ov && ov.style.opacity === "1") close(ov);
+      });
+
+      // document 级 click 委托：文章内图片点击放大
+      document.addEventListener("click", (e) => {
+        const ov = getOverlay();
+        if (!ov) return;
+
+        const img = e.target.closest("img");
+        if (!img) return;
+        if (!img.closest("#article")) return;
+        if (img.closest(".link-card")) return;
+
+        e.stopPropagation();
+        const src = img.getAttribute("src");
+        if (src) open(ov, src, img.getAttribute("alt") ?? "");
+      });
+    }
+
+    // ---- 每次页面就绪时重建 overlay + 刷新光标 ----
+    function setup() {
+      createOverlay();
+      styleImages();
+    }
+
+    // 首次加载
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", setup);
+    } else {
+      setup();
+    }
+
+    // View Transitions 切换文章后重建 overlay（只注册一次）
+    if (!html.dataset.zoomSwapBound) {
+      html.dataset.zoomSwapBound = "1";
+      document.addEventListener("astro:after-swap", () => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(setup);
+        });
+      });
+    }
+  })();
+</script>
