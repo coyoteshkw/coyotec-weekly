@@ -3,141 +3,101 @@
  * ImageZoom.astro - 图片点击全屏放大组件
  *
  * 在文章页面中让所有图片支持点击放大查看。
- * 用法：放在 PostLayout 或 Layout 中即可自动生效。
+ * 放在 PostLayout 中自动生效。
  */
 ---
 
-<div id="image-zoom-root"></div>
-
 <script is:inline>
-  // 使用 is:inline 确保立即执行，不经过 Astro ESM 打包
-  // 此时 DOM 可能未完全就绪，用 requestAnimationFrame 等待
+  (function () {
+    // 防止重复初始化
+    if (window.__imageZoomReady) return;
+    window.__imageZoomReady = true;
 
-  function setupImageZoom() {
-    if (document.querySelector("#image-zoom-overlay")) return;
-
-    // 创建单例 overlay
-    const overlay = document.createElement("div");
+    // 创建 overlay（只创建一次）
+    var overlay = document.createElement("div");
     overlay.id = "image-zoom-overlay";
-    overlay.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;max-width:95vw;max-height:95vh"><img class="image-zoom-img" style="max-width:100%;max-height:90vh;object-fit:contain;border-radius:8px;background:#fff;box-shadow:0 0 0 1px rgba(255,255,255,0.12),0 20px 60px rgba(0,0,0,0.5);opacity:0;transform:scale(0.9);transition:opacity 0.3s ease, transform 0.3s ease" /></div>';
+    overlay.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;max-width:95vw;max-height:95vh"><img style="max-width:100%;max-height:90vh;object-fit:contain;border-radius:8px;opacity:0;transform:scale(0.9);transition:opacity 0.3s ease,transform 0.3s ease" /></div>';
     document.body.appendChild(overlay);
 
-    const zoomedImg = overlay.querySelector("img");
+    var zoomedImg = overlay.querySelector("img");
 
-    // overlay 基础样式
     overlay.style.cssText =
-      "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;cursor:zoom-out;transition:background 0.3s ease;pointer-events:none;opacity:0;";
+      "position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;cursor:zoom-out;transition:background 0.3s ease;pointer-events:none;opacity:0";
 
+    // 打开
     function open(src, alt) {
       zoomedImg.src = src;
       zoomedImg.alt = alt || "";
       overlay.style.pointerEvents = "auto";
       overlay.style.opacity = "1";
-      // 根据当前主题决定遮罩颜色
       var isDark = document.documentElement.getAttribute("data-theme") === "dark";
-      if (isDark) {
-        overlay.style.background = "rgba(20,20,22,0.92)";
-      } else {
-        overlay.style.background = "rgba(245,245,247,0.92)";
-      }
+      overlay.style.background = isDark ? "rgba(20,20,22,0.92)" : "rgba(245,245,247,0.92)";
       overlay.style.backdropFilter = "blur(12px) saturate(180%)";
-      zoomedImg.style.boxShadow =
-        "0 4px 24px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.08)";
-      zoomedImg.style.borderRadius = "8px";
-      zoomedImg.style.background = "transparent";
+      zoomedImg.style.boxShadow = "0 4px 24px rgba(0,0,0,0.15),0 1px 3px rgba(0,0,0,0.08)";
       requestAnimationFrame(function () {
         zoomedImg.style.opacity = "1";
         zoomedImg.style.transform = "scale(1)";
       });
     }
 
+    // 关闭
     function close() {
       overlay.style.background = "rgba(0,0,0,0)";
       overlay.style.backdropFilter = "";
       zoomedImg.style.opacity = "0";
       zoomedImg.style.transform = "scale(0.9)";
-      overlay.addEventListener(
-        "transitionend",
-        function () {
-          overlay.style.opacity = "0";
-          overlay.style.pointerEvents = "none";
-        },
-        { once: true }
-      );
+      overlay.addEventListener("transitionend", function () {
+        overlay.style.opacity = "0";
+        overlay.style.pointerEvents = "none";
+      }, { once: true });
     }
 
     // 点击遮罩关闭
     overlay.addEventListener("click", function (e) {
-      if (e.target === overlay || e.target === overlay.firstElementChild) {
-        close();
-      }
+      if (e.target === overlay || e.target === overlay.firstElementChild) close();
     });
 
     // ESC 关闭
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && overlay.style.opacity === "1") {
-        close();
-      }
+      if (e.key === "Escape" && overlay.style.opacity === "1") close();
     });
 
-    // 绑定文章图片
-    function bind() {
+    // 在 article 容器上做 click 委托（不绑定到单个 img）
+    document.addEventListener("click", function (e) {
+      var target = e.target;
+      // 找到被点击的 img
+      var img;
+      if (target.tagName === "IMG") {
+        img = target;
+      } else {
+        // 可能点了 img 的父元素（如 picture）
+        img = target.closest("img");
+      }
+      if (!img) return;
+
+      // 必须在 #article 内，且不在 link-card 内
+      if (!img.closest("#article")) return;
+      if (img.closest(".link-card")) return;
+
+      e.stopPropagation();
+      var src = img.getAttribute("src");
+      if (src) open(src, img.getAttribute("alt") || "");
+    });
+
+    // 给文章图片加 cursor 提示（仅在首次和 after-swap 执行）
+    function styleImages() {
       var article = document.querySelector("#article");
       if (!article) return;
       var imgs = article.querySelectorAll("img");
       for (var i = 0; i < imgs.length; i++) {
-        var img = imgs[i];
-        if (img._zoomBound) continue;
-        if (img.closest(".link-card")) continue;
-        img._zoomBound = true;
-        img.style.cursor = "zoom-in";
-
-        img.addEventListener(
-          "click",
-          function (evt) {
-            evt.stopPropagation();
-            evt.preventDefault();
-            var src = this.getAttribute("src");
-            if (src) open(src, this.getAttribute("alt") || "");
-          }.bind(img),
-          true
-        ); // capture phase
+        if (!imgs[i].closest(".link-card")) {
+          imgs[i].style.cursor = "zoom-in";
+        }
       }
     }
-
-    // 立即绑定
-    requestAnimationFrame(function () {
-      requestAnimationFrame(bind);
-    });
-
-    // 路由切换后绑定（after-swap 确保 DOM 已完全替换）
+    requestAnimationFrame(function () { requestAnimationFrame(styleImages); });
     document.addEventListener("astro:after-swap", function () {
-      // 清除旧标记：View Transitions morph 可能保留旧元素的 _zoomBound
-      var allImgs = document.querySelectorAll("#article img");
-      for (var j = 0; j < allImgs.length; j++) {
-        allImgs[j]._zoomBound = false;
-      }
-      // 多帧延迟确保 morph 动画完成
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () {
-          requestAnimationFrame(bind);
-        });
-      });
+      requestAnimationFrame(function () { requestAnimationFrame(styleImages); });
     });
-  }
-
-  // 等 DOM 就绪
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", setupImageZoom);
-  } else {
-    setupImageZoom();
-  }
+  })();
 </script>
-
-<style>
-  /* 万一 is:inline 没问题，这里只有参考价值 */
-  .image-zoom-overlay {
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-  }
-</style>
