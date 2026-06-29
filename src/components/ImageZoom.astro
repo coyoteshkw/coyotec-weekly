@@ -33,7 +33,13 @@
       zoomedImg.alt = alt || "";
       overlay.style.pointerEvents = "auto";
       overlay.style.opacity = "1";
-      overlay.style.background = "rgba(245,245,247,0.92)";
+      // 根据当前主题决定遮罩颜色
+      var isDark = document.documentElement.getAttribute("data-theme") === "dark";
+      if (isDark) {
+        overlay.style.background = "rgba(20,20,22,0.92)";
+      } else {
+        overlay.style.background = "rgba(245,245,247,0.92)";
+      }
       overlay.style.backdropFilter = "blur(12px) saturate(180%)";
       zoomedImg.style.boxShadow =
         "0 4px 24px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.08)";
