@@ -88,7 +88,7 @@
       for (var i = 0; i < imgs.length; i++) {
         var img = imgs[i];
         if (img._zoomBound) continue;
-        if (img.closest(".carousel-root, .link-card")) continue;
+        if (img.closest(".link-card")) continue;
         img._zoomBound = true;
         img.style.cursor = "zoom-in";
 
