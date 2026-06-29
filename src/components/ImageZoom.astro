@@ -63,11 +63,6 @@
       }
     });
 
-    // 滚轮关闭
-    overlay.addEventListener("wheel", function () {
-      close();
-    }, { passive: true, once: true });
-
     // ESC 关闭
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && overlay.style.opacity === "1") {
