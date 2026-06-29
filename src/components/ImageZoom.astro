@@ -112,7 +112,12 @@
 
     // 路由切换后绑定（after-swap 确保 DOM 已完全替换）
     document.addEventListener("astro:after-swap", function () {
-      // View Transitions morph 完成后 DOM 才稳定，多等几帧
+      // 清除旧标记：View Transitions morph 可能保留旧元素的 _zoomBound
+      var allImgs = document.querySelectorAll("#article img");
+      for (var j = 0; j < allImgs.length; j++) {
+        allImgs[j]._zoomBound = false;
+      }
+      // 多帧延迟确保 morph 动画完成
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
           requestAnimationFrame(bind);
