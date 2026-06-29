@@ -105,13 +105,18 @@
       }
     }
 
-    // 立即绑定 + 路由切换后重新绑定
+    // 立即绑定
     requestAnimationFrame(function () {
       requestAnimationFrame(bind);
     });
-    document.addEventListener("astro:page-load", function () {
+
+    // 路由切换后绑定（after-swap 确保 DOM 已完全替换）
+    document.addEventListener("astro:after-swap", function () {
+      // View Transitions morph 完成后 DOM 才稳定，多等几帧
       requestAnimationFrame(function () {
-        requestAnimationFrame(bind);
+        requestAnimationFrame(function () {
+          requestAnimationFrame(bind);
+        });
       });
     });
   }
