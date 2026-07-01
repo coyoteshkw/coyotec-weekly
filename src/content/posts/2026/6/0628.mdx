@@ -9,8 +9,6 @@ description: 一入MC深似海
 
 import Carousel from "@/components/Carousel.astro";
 import DownloadButton from "@/components/DownloadButton.astro";
-import LinkCard from "@/components/LinkCard.astro"
-
 
 ## 本周做了什么
 - 玩了一周的MC
@@ -38,7 +36,7 @@ import LinkCard from "@/components/LinkCard.astro"
 
 所以它没有用Mixin，没有任何前置依赖，就是能用
 
-在最开始是打算让它按K键可以打开聊天栏并显示，然后在物品栏界面只要点击搜索栏就显示，但无论我怎么让AI改，都无法实现点击触发。和controlify不同，我无法很便利地通过手柄点击来识别光标点到了哪里，只能在移出搜索栏时做到打开键盘...那有啥用？！
+在最开始是打算让它按K键可以打开聊天栏并显示，然后在物品栏界面只要点击搜索栏就显示，但无论我怎么让AI改，都无法实现点击触发。和controlify不同，我无法很便利地通过手柄点击来识别光标点到了哪里，只能在移出搜索栏时做到打开键盘......那有啥用？！
 
 在之后又经历了键盘无限启动等情况，转向了另一种方案，即在物品栏界面添加按钮来打开和关闭键盘，这立马收到了成效，但我仍然无法在物品栏界面搜索到正确的JEI界面，怀疑是自动定位到了原生搜索栏中，拼尽全力无法战胜，遂从Pi Agent转向Claude Code
 
@@ -66,12 +64,6 @@ Steam上的免费Bongo cat出Mac版了，应该是不久之前的事情
 
 ### [Clawd on Desk](https://github.com/rullerzhou-afk/clawd-on-desk) - 桌面小Claude！
 
-<LinkCard
-    href="https://turso.tech"
-    title="Turso - 基于 SQLite 的云数据库"
-    description="轻量级，可拓展，速度快。默认每月额度很够用。"
-    image="https://a692b0fb.cloudflare-imgbed-czl.pages.dev/file/1782655865711_image.png"
-/>
 虽然我现在更多使用Pi，但是这个第三方小C支持包括Pi在内的大量Agent，所以完全没问题
 
 唯一的缺点是没有支持aerospace的切换逻辑，所以只会在一个窗口内存在，最后变成了提醒我**任务完成啦！** 的赛博小狗
@@ -107,7 +99,7 @@ Steam上的免费Bongo cat出Mac版了，应该是不久之前的事情
 ### [StatIndet/daybook](https://daybook.page/) - 优秀的静态博客
 在浏览B站时刷到，审美惊为天人，功能非常完善，开箱支持大量组件，支持Cloudflare Pages，几乎把我拐走，如果不是我现在的网站已经很稳定了的话
 
-是一个将来我可能会使用的博客，非常优秀。可以给作者点[Star](https://github.com/StatIndet/daybook)
+是一个将来我可能会使用的博客，非常优秀。可以给作者Github点[Star](https://github.com/StatIndet/daybook)
 
 > 作者最近在快速迭代，加了一些动效导致鼠标移动有延迟，所以还可以再观望一下稳定版本
 

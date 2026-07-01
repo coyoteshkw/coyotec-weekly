@@ -1,0 +1,161 @@
+---
+// Fancybox 图片灯箱 — 替换原有的 ImageZoom
+// 功能：点击放大 + 左右滑动 + 旋转 + 缩放 + 缩略图导航
+// 适配：普通文章图片 + Carousel 轮播图
+import "@fancyapps/ui/dist/fancybox/fancybox.css";
+import "@/styles/fancybox-custom.css";
+---
+
+<script>
+  let Fancybox: any;
+
+  // 选择器：文章正文中所有图片。轮播图单独处理（因其 mousedown 被 prevent 了 click）
+  const IMG_SELECTOR = "#article img:not(.carousel-slide img), #article picture img:not(.carousel-slide img)";
+
+  // ---- 轮播图点击放大（独立处理，绕过 Carousel 的 mousedown prevent） ----
+  // Carousel 在 img 上监听 mousedown 并 e.preventDefault()，阻止了浏览器 click 事件，
+  // 导致 Fancybox 的 click 绑定无法触发。这里用 pointerdown/pointerup 自行判断，
+  // 如果没有拖拽位移则手动调用 Fancybox.open()。
+  const dragThreshold = 8; // 像素
+
+  function setupCarouselClickToZoom() {
+    document.querySelectorAll(".carousel-slide img").forEach((img) => {
+      const el = img as HTMLImageElement;
+      if ((el as any).__fancyboxCarouselBound) return;
+      (el as any).__fancyboxCarouselBound = true;
+
+      let startX = 0;
+      let startY = 0;
+      let tracked = false;
+
+      el.addEventListener("pointerdown", (e: PointerEvent) => {
+        // 只处理主按钮（左键/触摸）
+        if (e.pointerType === "mouse" && e.button !== 0) return;
+        startX = e.clientX;
+        startY = e.clientY;
+        tracked = true;
+      }, { passive: true });
+
+      el.addEventListener("pointermove", (e: PointerEvent) => {
+        if (!tracked) return;
+        const dx = Math.abs(e.clientX - startX);
+        const dy = Math.abs(e.clientY - startY);
+        if (dx > dragThreshold || dy > dragThreshold) {
+          tracked = false; // 发生了拖拽，取消
+        }
+      }, { passive: true });
+
+      el.addEventListener("pointerup", (e: PointerEvent) => {
+        if (!tracked) return;
+        tracked = false;
+
+        // 发生了拖拽位移，放弃
+        const dx = Math.abs(e.clientX - startX);
+        const dy = Math.abs(e.clientY - startY);
+        if (dx > dragThreshold || dy > dragThreshold) return;
+
+        // 纯点击 → 用 Fancybox 打开
+        if (!Fancybox) return;
+
+        // 收集当前页面所有图片（用于 groupAll 画廊模式）
+        const allArticleImgs = Array.from(
+          document.querySelectorAll("#article img, #article picture img")
+        ) as HTMLImageElement[];
+
+        // 找到当前图片在列表中的索引
+        const currentIndex = allArticleImgs.indexOf(el);
+
+        const items = allArticleImgs.map((img) => ({
+          src: img.getAttribute("src") || "",
+          thumb: img.getAttribute("src") || "",
+        }));
+
+        Fancybox.show(items, {
+          ...getOptions(),
+          startIndex: currentIndex >= 0 ? currentIndex : 0,
+        });
+      });
+    });
+  }
+
+  function getOptions() {
+    return {
+      Thumbs: {
+        autoStart: true,
+        showOnStart: "yes",
+      },
+      Toolbar: {
+        display: {
+          left: ["infobar"],
+          middle: [
+            "zoomIn",
+            "zoomOut",
+            "toggle1to1",
+            "rotateCCW",
+            "rotateCW",
+            "flipX",
+            "flipY",
+          ],
+          right: ["slideshow", "thumbs", "close"],
+        },
+      },
+      animated: true,
+      dragToClose: true,
+      keyboard: {
+        Escape: "close",
+        Delete: "close",
+        Backspace: "close",
+        PageUp: "next",
+        PageDown: "prev",
+        ArrowRight: "next",
+        ArrowLeft: "prev",
+      },
+      fitToView: true,
+      preload: 3,
+      infinite: true,
+      Panzoom: {
+        maxScale: 3,
+        minScale: 1,
+      },
+      caption: false,
+      groupAll: true,
+      Carousel: {
+        transition: "slide",
+        preload: 2,
+      },
+    };
+  }
+
+  async function setup() {
+    // 轮播图需要先绑定自定义点击处理（必须在 Fancybox 加载前）
+    setupCarouselClickToZoom();
+
+    if (!document.querySelector(IMG_SELECTOR)) return;
+
+    if (!Fancybox) {
+      const mod = await import("@fancyapps/ui");
+      Fancybox = mod.Fancybox;
+    }
+
+    // 普通图片：直接 bind
+    Fancybox.bind(IMG_SELECTOR, getOptions());
+  }
+
+  function cleanupFancybox() {
+    if (Fancybox) {
+      Fancybox.close();
+      Fancybox.unbind(document.body);
+    }
+  }
+
+  // 首次加载
+  setup();
+
+  // View Transitions (Astro ClientRouter) — 页面切换
+  document.addEventListener("astro:page-load", () => {
+    requestAnimationFrame(() => setup());
+  });
+
+  // 旧页面离开前清理
+  document.addEventListener("astro:before-swap", cleanupFancybox);
+</script>

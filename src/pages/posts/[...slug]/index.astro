@@ -16,7 +16,7 @@ import BackButton from "./_components/BackButton.astro";
 import BackToTopButton from "./_components/BackToTopButton.astro";
 import AdjacentPostNav from "./_components/AdjacentPostNav.astro";
 import TocFloating from "./_components/TocFloating.astro";
-import ImageZoom from "@/components/ImageZoom.astro";
+import FancyboxGallery from "@/components/FancyboxGallery.astro";
 import config from "@/config";
 
 export async function getStaticPaths() {
@@ -166,7 +166,7 @@ const ogImage = ogImageUrl
     <AdjacentPostNav {prevPost} {nextPost} />
 
     <TocFloating />
-    <ImageZoom />
+    <FancyboxGallery />
   </main>
   <Footer />
 </PostLayout>
