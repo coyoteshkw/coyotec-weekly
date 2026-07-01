@@ -10,25 +10,26 @@
   --font-app: var(--font-google-sans-code);
 }
 
-/* Light theme values - Jadeite */
+/* Light theme values */
 :root,
 [data-theme="light"] {
-  --background: #f6fcf7;
-  --foreground: #060b07;
-  --accent: #027c6d;
+  --background: #fdfdfd;
+  --foreground: #282728;
+  --accent: #006cac;
   --accent-foreground: #ffffff;
-  --muted: #c9e4e2;
+  --muted: #e6e6e6;
   --muted-foreground: #6b7280;
-  --border: #d4e1df;
+  --border: #ece9e9;
 }
 
-/* Dark theme values - Ember */
+/* Dark theme values */
+/* Alternative (green): accent #4ade80, muted #1a2e1a, border #2a3e2a */
 [data-theme="dark"] {
-  --background: #1a1a1a;
-  --foreground: #f5efe4;
-  --accent: #ff3737;
-  --accent-foreground: #1a1a1a;
-  --muted: #38342f;
-  --muted-foreground: #a59a8c;
-  --border: #6f5648;
+  --background: #212737;
+  --foreground: #eaedf3;
+  --accent: #c084fc;
+  --accent-foreground: #0a0a1a;
+  --muted: #1a1030;
+  --muted-foreground: #9ca3af;
+  --border: #2a2040;
 }
