@@ -31,7 +31,7 @@ export default defineConfig({
   ],
   i18n: {
     locales: ["en", "zh-CN"],
-    defaultLocale: "en",
+    defaultLocale: "zh-CN",
     routing: {
       prefixDefaultLocale: false,
     },
@@ -65,10 +65,10 @@ export default defineConfig({
       ? undefined
       : [
           {
-            name: "Google Sans Code",
+            name: "Rubik",
             cssVariable: "--font-google-sans-code",
             provider: fontProviders.google(),
-            fallbacks: ["monospace"],
+            fallbacks: ["sans-serif"],
             weights: [300, 400, 500, 600, 700],
             styles: ["normal", "italic"],
             formats: ["woff", "ttf"],
