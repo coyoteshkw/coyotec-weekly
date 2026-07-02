@@ -1,0 +1,110 @@
+---
+/**
+ * Collapse 折叠组件
+ *
+ * 基于原生 <details>/<summary>，点击展开/关闭，支持 MDX 内容。
+ * 按钮默认全宽，可通过 fullWidth={false} 改为适应文字宽度。
+ *
+ * @example
+ * <Collapse title="点击展开详情">
+ *   这里可以写 **Markdown**、代码等任意内容。
+ * </Collapse>
+ */
+type Props = {
+  title: string;
+  /** 按钮是否撑满宽度，默认 true */
+  fullWidth?: boolean;
+  /** 默认是否展开 */
+  open?: boolean;
+};
+
+const { title, fullWidth = true } = Astro.props;
+---
+
+<details class:list={["collapse-root group my-3", fullWidth ? "block" : "w-fit"]}>
+  <summary
+    class:list={[
+      "collapse-trigger cursor-pointer select-none items-center gap-2 border border-border bg-muted/50 px-4 py-2 text-left text-sm font-medium text-foreground transition-colors hover:bg-muted marker:content-none rounded-t-md group-open:rounded-b-none rounded-b-md",
+      fullWidth ? "flex" : "inline-flex",
+    ]}
+  >
+    <svg
+      class="collapse-arrow size-4 shrink-0 transition-transform duration-200 group-open:rotate-90"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="m9 18 6-6-6-6"/>
+    </svg>
+    <span>{title}</span>
+  </summary>
+
+  <div class="collapse-wrapper overflow-hidden rounded-b-md border-x border-b border-border">
+    <div class="collapse-inner shadow-[0_0_8px_rgba(var(--tag-bg,128,128,128),0.15)]">
+      <slot />
+    </div>
+  </div>
+</details>
+
+<style>
+  .collapse-wrapper {
+    transition: height 0.3s ease;
+    height: 0;
+  }
+
+  .collapse-inner {
+    padding: 0.75rem 1rem;
+    background: var(--color-background);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    cursor: default;
+  }
+
+  :root[data-theme="dark"] .collapse-wrapper {
+    border-color: #4a3a5a;
+  }
+
+  .collapse-root summary::-webkit-details-marker {
+    display: none;
+  }
+</style>
+
+<script>
+  function initCollapse() {
+    document.querySelectorAll<HTMLElement>(".collapse-wrapper").forEach((wrapper) => {
+      const details = wrapper.closest("details")!;
+      const inner = wrapper.querySelector<HTMLElement>(".collapse-inner")!;
+
+      function setHeight(open: boolean) {
+        if (open) {
+          wrapper.style.height = inner.scrollHeight + "px";
+        } else {
+          wrapper.style.height = wrapper.scrollHeight + "px";
+          requestAnimationFrame(() => {
+            wrapper.style.height = "0px";
+          });
+        }
+      }
+
+      // 初始状态
+      if (details.open) setHeight(true);
+
+      details.addEventListener("toggle", () => {
+        setHeight(details.open);
+      });
+
+      // transitionend 后清除固定高度
+      wrapper.addEventListener("transitionend", () => {
+        if (details.open) {
+          wrapper.style.height = "auto";
+        }
+      });
+    });
+  }
+
+  initCollapse();
+  document.addEventListener("astro:after-swap", initCollapse);
+</script>
