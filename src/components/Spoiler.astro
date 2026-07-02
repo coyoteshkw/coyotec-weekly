@@ -1,0 +1,69 @@
+---
+/**
+ * Spoiler 剧透遮罩组件
+ *
+ * 包裹的文本默认被黑色遮罩覆盖，点击后显示。
+ * 遮罩颜色自动跟随系统明暗主题（使用 foreground 色作为遮罩色）。
+ *
+ * @example
+ * <Spoiler>他其实是凶手</Spoiler>
+ */
+---
+
+<span class="spoiler-wrapper inline">
+  <span
+    class="spoiler-mask cursor-pointer rounded px-0.5 transition-all duration-200"
+    role="button"
+    tabindex="0"
+    aria-label="点击显示剧透内容"
+  >
+    <slot />
+  </span>
+</span>
+
+<style>
+  .spoiler-mask {
+    background: var(--color-accent);
+    color: transparent;
+    user-select: none;
+  }
+
+  .spoiler-mask.revealed {
+    background: transparent !important;
+    color: inherit;
+    cursor: default;
+    user-select: auto;
+  }
+
+  .spoiler-mask.revealed:hover {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  function reveal(el: HTMLElement) {
+    el.classList.add("revealed");
+    el.removeAttribute("role");
+    el.removeAttribute("tabindex");
+    el.removeAttribute("aria-label");
+  }
+
+  document.addEventListener("click", (e) => {
+    const target = e.target as HTMLElement;
+    if (target.classList.contains("spoiler-mask") && !target.classList.contains("revealed")) {
+      reveal(target);
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    const target = e.target as HTMLElement;
+    if (
+      target.classList.contains("spoiler-mask") &&
+      !target.classList.contains("revealed") &&
+      (e.key === "Enter" || e.key === " ")
+    ) {
+      e.preventDefault();
+      reveal(target);
+    }
+  });
+</script>
