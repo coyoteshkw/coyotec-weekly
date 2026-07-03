@@ -58,7 +58,7 @@ export default defineConfig({
     },
   },
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss() as any],
   },
   fonts:
     process.env.USE_LOCAL_FONTS === "true"
