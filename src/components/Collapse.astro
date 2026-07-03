@@ -70,6 +70,11 @@ const { title, fullWidth = true } = Astro.props;
   .collapse-root summary::-webkit-details-marker {
     display: none;
   }
+
+  /* 恢复 slot 内 MDX 生成的 <p> 标签显示，不被 prose 的 details p { display: none } 隐藏 */
+  .collapse-root :global(p) {
+    display: revert;
+  }
 </style>
 
 <script>
