@@ -18,6 +18,8 @@ import {
 import { transformerFileName } from "./src/utils/transformers/fileName";
 import { remarkCjkSpacing } from "./src/utils/remarkCjkSpacing";
 import rehypeCallouts from "rehype-callouts";
+import remarkDirective from "remark-directive";
+import remarkDirectiveSugar from "remark-directive-sugar";
 import config from "./astro-paper.config";
 
 export default defineConfig({
@@ -39,6 +41,8 @@ export default defineConfig({
   markdown: {
     processor: unified({
       remarkPlugins: [
+        remarkDirective,
+        remarkDirectiveSugar,
         remarkToc,
         remarkCjkSpacing,
         [remarkCollapse, { test: "Table of contents" }],
