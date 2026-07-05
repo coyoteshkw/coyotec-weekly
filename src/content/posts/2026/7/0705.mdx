@@ -1,0 +1,99 @@
+---
+author: coyoteshkw
+pubDatetime: 2026-07-05
+title: 2026 第27周 - 博客与博客与很多博客
+draft: false
+tags: ["weekly"]
+description: 哇，好多的博客
+---
+
+import Carousel from "@/components/Carousel.astro";
+import DownloadButton from "@/components/DownloadButton.astro";
+
+## 本周做了什么
+- 博客
+  	- 了解SVG格式如何动起来，为博客标题添加LOGO
+	- 参考 [ArtemKutsan/astro-citrus](https://github.com/ArtemKutsan/astro-citrus#key-features) 为博客添加了一些图标，修改了一些样式
+    - 更改了夜间主题配色，现在更加舒适了
+    - 参考[我的tiddlywiki](https://coyotec.tiddlyhost.com)修改英文字体从 `Google Sans Code` 到 `Rubik`
+    - 参考Firefly和Daybook个人博客，添加了很多的功能块，像视频嵌入/链接按钮/剧透块/折叠块，并解决favicon图标大陆难以访问到问题，重点插件是remark-directive-sugar，也因此修订了我的[Astro文章](https://coyoteshkw.com/posts/tech-play/astro-blog-zero-to-live/)
+    - 根据Firefly博客移植了猜你想看栏目到blog项目，目前尚未决定移植到weekly，因为目前的weekly几乎没有标签
+    - 真的很感谢这两位老师！！！
+    - 也尝试添加动态OG链接卡片，但最终放弃，能够支持的网页还是很少，如果需求很高，不如自己自定义链接卡片划算
+    - 为图床做了CF优选，让我的江苏朋友也可以正常访问图片，对外国用户的访问速度似乎有所下降，但是在国内似乎总体好评。具体看我的[blog](https://coyoteshkw.com/posts/tech-play/cloudflare-pages-performance-tuning/)
+    - 利用[Fancybox](https://fancyapps.com)灯箱组件，实现了心心念念的图片放大功能。(其实之前的方案在上传到CF后似乎没有问题，但是因为我本地测试有问题，所以还是放弃了，现在的方案也更加成熟，虽然对网页速度可能稍微拖慢一点，但是总体体验应当是提升的)
+- 想寻找一些合适的编辑器在写完后检查markdown格式，最后发现还是之前自己推荐的MarkEdit好使:D
+- 修订了群服互联文章，新写了图片优选文章
+- 温习了部分tailwindcss语法，温故而知新，主要是太多了
+
+## 收集的资源
+
+### [Astro Paper作者的博客](https://satnaing.dev/blog)
+第一次发现作者自己偷偷吃这么好！
+
+动效、光标特效等等都值得借鉴，过渡优秀
+
+![image.png](https://img.055933.xyz/file/1783255604333_image.png)
+
+### [郝鸿涛](https://hongtaoh.com/cn/about/)
+
+推荐这个博客的原因是：作者可以一直写
+
+到如今已经写了六年，他的文章通常不长，但是包罗万象，什么都写，朴实。
+
+因此也非常适合它所用的极简主义博客，用户想看什么文章打开博客一看便知，为此也专门提供了一个学习栏目，收集CS相关的博文，对我也是很好的教导
+
+愿我们都一直写，虽然这很难
+
+![image.png](https://img.055933.xyz/file/1783255591368_image.png)
+
+### [夏夜流萤](https://blog.cuteleaf.cn/) - Firefly主题的开发者
+互联网一众博客教程视频中主题的缔造者，这里也顺便推荐这个主题。和我使用的Astro Paper主题是两个风格，但是在繁多的功能中也保持了相对的观看舒适感，可自定义程度高，自带功能丰富
+
+![image.png](https://img.055933.xyz/file/1783260375148_image.png)
+
+### [FaviconSnap](https://faviconsnap.com/)
+替代duckduckgo或谷歌的favicon获取api，便利国内用户，用在了remark-directive-sugar这个插件上，感谢它提供了自定义功能，虽然这个自定义不包括Github链接按钮，所以还是只能定义一小部分，但至少这让它能用了，少些一些轮子
+
+![image.png](https://img.055933.xyz/file/1783255939945_image.png)
+
+### [Expressive Code](https://expressive-code.com/) - 帅气的代码块
+
+我一直用Astro Paper自带的shiki代码渲染，在看Firefly博客主题时发现它还有代码折叠等功能，才发现还有一个叫Expressive Code的东西
+
+尝试将它整合到我的博客中，但是出现了意料之外的困难，似乎我只能使用catppuccin主题，只要换成别的就报错，因此先搁置了。除了折叠功能以外我对它也不急需
+
+![image.png](https://img.055933.xyz/file/1783256089601_image.png)
+
+### [Fancyapps](https://fancyapps.com/) - 功能丰富的JavaScript工具包
+
+提供灯箱、画廊、地图式平移等功能
+
+<Carousel dot-placement="bottom">
+  <img src="https://img.055933.xyz/file/1783256149195_image.png" alt="截图1" />
+  <img src="https://img.055933.xyz/file/1783256173426_image.png" alt="截图2" />
+  <img src="https://img.055933.xyz/file/1783256234907_image.png" alt="截图3" />
+</Carousel>
+
+> [!WARNING]
+> Fancyapps可以在开发或测试环境中免费试用，但理论上上线后需要付费购买许可证
+
+### [Radmin LAN](https://www.radmin-lan.cn/)
+可以搭建虚拟局域网，用来游戏联机。对城堡破坏者、以撒都有效果。缺点是不支持Linux和Mac，所以玩城堡破坏者的时候我的两个朋友是一个“局域网”我是单独一个网，我们中间有一个神奇的10厘米延迟😂但是他们两人之间延迟相当优秀
+
+如果之后需求高，可能会换用ZeroTier、EasyTier等支持Linux的软件。
+
+这个软件的官网下载速度相当薛定谔，开不开代理速度都极其差劲。所以我从:link[知乎]{id=https://zhuanlan.zhihu.com/p/1994722475796358965}搞了个夸克网盘的下载地址来：<DownloadButton href="https://pan.quark.cn/s/d40fca9685c1#/list/share"/>，虽然速度也就那样，但是真的比官网快...
+
+<Carousel dot-placement="bottom">
+  <img src="https://img.055933.xyz/file/1783256277725_image.png" alt="截图1" />
+  <img src="https://img.055933.xyz/file/1783256313289_image.png" alt="截图2" />
+  <img src="https://img.055933.xyz/file/1783256320532_image.png" alt="截图3" />
+</Carousel>
+
+## 说点什么
+其实在看历史记录之前，觉得自己这周真的没干什么。看完之后发现干的还真不少，比上周多。一点点不多的完美主义在爆发，从一开始觉得只要先把默认博客搭建起来就好到DIY停不下来，再加上好几篇文章修订，第一标题的内容写的满满的
+
+之后还应该提升一下创造性，想想最想要的特点是什么
+
+本周也给Daybook博客的开发者随便写了个issue聊了一下，让他搞定了自定义光标在Mac触控板下炫酷漂移的问题，很友好的一次交流
