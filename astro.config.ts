@@ -43,6 +43,7 @@ export default defineConfig({
       remarkPlugins: [
         remarkDirective,
         remarkDirectiveSugar,
+        [remarkDirectiveSugar, { faviconSourceUrl: "https://favicon.yandex.net/favicon/{domain}" }],
         remarkToc,
         remarkCjkSpacing,
         [remarkCollapse, { test: "Table of contents" }],
