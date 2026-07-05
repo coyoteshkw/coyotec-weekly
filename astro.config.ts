@@ -20,6 +20,9 @@ import { remarkCjkSpacing } from "./src/utils/remarkCjkSpacing";
 import rehypeCallouts from "rehype-callouts";
 import remarkDirective from "remark-directive";
 import remarkDirectiveSugar from "remark-directive-sugar";
+import rehypeComponents from "rehype-components";
+import { parseDirectiveNode } from "./src/plugins/remark-directive-rehype";
+import { GithubCardComponent } from "./src/plugins/rehype-component-github-card.mjs";
 import config from "./astro-paper.config";
 
 export default defineConfig({
@@ -42,12 +45,23 @@ export default defineConfig({
     processor: unified({
       remarkPlugins: [
         remarkDirective,
+        parseDirectiveNode,
         [remarkDirectiveSugar, { link: { faviconSourceUrl: "https://faviconsnap.com/api/favicon?url={domain}" } }],
         remarkToc,
         remarkCjkSpacing,
         [remarkCollapse, { test: "Table of contents" }],
       ],
-      rehypePlugins: [rehypeCallouts],
+      rehypePlugins: [
+        rehypeCallouts,
+        [
+          rehypeComponents,
+          {
+            components: {
+              github: GithubCardComponent,
+            },
+          },
+        ],
+      ],
     }),
     shikiConfig: {
       themes: { light: "min-light", dark: "night-owl" },
