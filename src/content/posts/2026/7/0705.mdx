@@ -18,7 +18,7 @@ import DownloadButton from "@/components/DownloadButton.astro";
     - 参考[我的tiddlywiki](https://coyotec.tiddlyhost.com)修改英文字体从 `Google Sans Code` 到 `Rubik`
     - 参考Firefly和Daybook个人博客，添加了很多的功能块，像视频嵌入/链接按钮/剧透块/折叠块，并解决favicon图标大陆难以访问到问题，重点插件是remark-directive-sugar，也因此修订了我的[Astro文章](https://coyoteshkw.com/posts/tech-play/astro-blog-zero-to-live/)
     - 根据Firefly博客移植了猜你想看栏目到blog项目，目前尚未决定移植到weekly，因为目前的weekly几乎没有标签
-    - 真的很感谢这两位老师！！！
+    - **真的很感谢这两位老师！！！**
     - 也尝试添加动态OG链接卡片，但最终放弃，能够支持的网页还是很少，如果需求很高，不如自己自定义链接卡片划算
     - 为图床做了CF优选，让我的江苏朋友也可以正常访问图片，对外国用户的访问速度似乎有所下降，但是在国内似乎总体好评。具体看我的[blog](https://coyoteshkw.com/posts/tech-play/cloudflare-pages-performance-tuning/)
     - 利用[Fancybox](https://fancyapps.com)灯箱组件，实现了心心念念的图片放大功能。(其实之前的方案在上传到CF后似乎没有问题，但是因为我本地测试有问题，所以还是放弃了，现在的方案也更加成熟，虽然对网页速度可能稍微拖慢一点，但是总体体验应当是提升的)
@@ -53,7 +53,7 @@ import DownloadButton from "@/components/DownloadButton.astro";
 ![image.png](https://img.055933.xyz/file/1783260375148_image.png)
 
 ### [FaviconSnap](https://faviconsnap.com/)
-替代duckduckgo或谷歌的favicon获取api，便利国内用户，用在了remark-directive-sugar这个插件上，感谢它提供了自定义功能，虽然这个自定义不包括Github链接按钮，所以还是只能定义一小部分，但至少这让它能用了，少些一些轮子
+替代duckduckgo或谷歌的favicon获取api，便利国内用户，用在了remark-directive-sugar这个插件上，感谢它提供了自定义功能，虽然这个自定义不包括Github链接按钮，所以还是只能定义一小部分，但至少这让它能用了，少写一些轮子
 
 ![image.png](https://img.055933.xyz/file/1783255939945_image.png)
 
@@ -83,7 +83,9 @@ import DownloadButton from "@/components/DownloadButton.astro";
 
 如果之后需求高，可能会换用ZeroTier、EasyTier等支持Linux的软件。
 
-这个软件的官网下载速度相当薛定谔，开不开代理速度都极其差劲。所以我从:link[知乎]{id=https://zhuanlan.zhihu.com/p/1994722475796358965}搞了个夸克网盘的下载地址来：<DownloadButton href="https://pan.quark.cn/s/d40fca9685c1#/list/share"/>，虽然速度也就那样，但是真的比官网快...
+这个软件的官网下载速度相当薛定谔，开不开代理速度都极其差劲。所以我从:link[知乎]{id=https://zhuanlan.zhihu.com/p/1994722475796358965}搞了个夸克网盘的下载地址来，虽然速度也就那样，但是真的比官网快...
+
+<DownloadButton href="https://pan.quark.cn/s/d40fca9685c1#/list/share"/>
 
 <Carousel dot-placement="bottom">
   <img src="https://img.055933.xyz/file/1783256277725_image.png" alt="截图1" />
