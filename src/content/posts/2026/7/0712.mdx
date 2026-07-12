@@ -1,0 +1,80 @@
+---
+author: coyoteshkw
+pubDatetime: 2026-07-12
+title: 2026 第28周 - TaiwindCSS, Orion
+draft: false
+tags: ["weekly"]
+description: 蝉鸣夏深
+---
+
+import Carousel from "@/components/Carousel.astro";
+
+## 本周做了什么
+- 复习TailwindCSS，并做笔记[发布](https://coyoteshkw.com/posts/programming/tailwindcss-notes/)
+- 详细了解CSS容器查询特性
+- 手操+AI精修 MC知识问答网站
+- 手操+AI精修 Github随机仓库网站，笔记也同时[发布]()
+- 手操+AI精修 天气应用
+- MC制作了红石流水线，并修bug
+
+自己写代码的手感还是很重要的，之后也要定期温习。基础知识在AI越来越厉害的时代至关重要，但基础知识的学习要枯燥的多，耐下心也是一种逐渐被剥夺的能力，只能逐渐找回
+
+## 收集的资源
+
+### [Skill Hub 中国](https://www.skill-cn.com/)  - 实战 Skill 案例与可复用方案库
+比起扫视Skills更大的作用是用里面的文章了解常用的skill和最佳实践，毕竟是中文的，比起探究那些不常见的可能投毒的小skill，了解知名skill的用法显然更重要。
+
+![image.png](https://img.055933.xyz/file/1783750841846_image.png)
+
+### [colors](https://coolors.co/) - 配色网站
+程序员手操时最麻烦的部分是UI，用现成的UI库做出来千篇一律，自己灵机一动想出的UI看起来像“我已经学会了设计”的GIF图。一个好的色板可以解决不少问题，这个色板还支持一键导出Tailwind @theme语法，用起来更省心
+
+![我已经完全学会了设计.jpg](https://img.055933.xyz/file/1783861726881_b77879e3dabeac1b5da13291ab57ba55.jpg)
+
+![image.png](https://img.055933.xyz/file/1783861661224_image.png)
+
+### [kiss-translator](https://github.com/fishjar/kiss-translator) - 一个简约、开源的 双语对照翻译扩展 & 油猴脚本
+在沉浸式翻译为了赚钱越来越变态、性能也越来越差之后，一直保持能用就行的我也不得不寻找替代品，KISS翻译属于此列
+
+严格来说，这个插件还没有到达沉浸式翻译的水平，同样都使用必应翻译，KISS的翻译水平就是笨一些，断句也很有些问题，只能在谷歌和必应翻译中间翻来覆去找稍微适合一些的翻译。但是在很多场合已经达到可用水准。而且性能我个人觉得比沉浸式翻译要好一些
+
+![image.png](https://img.055933.xyz/file/1783862593985_image.png)
+
+### [Zed](https://zed.dev/) - 代码编辑器，极简、快速、AI
+和zed认识的过程又可以称为《8G内存电脑生存日记》
+
+我也大量使用vim，但有些时候更需要轻量化地检查多个项目，vim在编辑一个或两三个文件时更好用，vscode更成熟但是更卡，开三个项目这个电脑就要考虑一下还开的了浏览器了不。sublime也不错但是没有官方的项目式侧边栏，于是zed进入了视野
+
+很长一段时间我觉得它很难用，拓展不成熟，长时间没有中文，AI功能其他编辑器也有并不新鲜，但是现在zed已经更新到1.0版本，AI功能完善接口丰富，可以接入Opencode Go做一些轻量修改。也有了民间的中文翻译版本[zedG](https://github.com/x6nux/zed-globalization)。现在是一个相对合格的代码编辑器了
+
+> [!WARNING]
+> ZedG不是插件是App，安装了就不用再安装本体了，一个东西，也可以正常更新
+
+<Carousel dot-placement="bottom">
+  <img src="https://img.055933.xyz/file/1783863762967_image.png" alt="截图1" />
+  <img src="https://img.055933.xyz/file/1783863773267_image.png" alt="截图2" />
+  <img src="https://img.055933.xyz/file/1783863783032_image.png" alt="截图3" />
+</Carousel>
+
+### [海豹骰子](https://dice.weizaima.com/) - COC/DND跑团机器人
+本周一直在工，各种神秘小网站就找的少了，但是本周有跑团，所以正好可以推荐一下这个骰子。
+
+COC跑团（克苏鲁的呼唤）是一种基于恐怖悬疑主题的桌上角色扮演游戏，玩家扮演调查员，在主持人引导下共同探索诡异事件、揭开神秘真相，并努力在超自然威胁中保持理智存活下来。DND指《龙与地下城》（Dungeons & Dragons），是一款由玩家扮演奇幻角色、通过掷骰子和团队合作进行冒险的桌上角色扮演游戏。线上跑团为了方便，通常会在QQ上进行，但是QQ官方的机器人功能少限制多，所以通常会使用自己搭建的QQ机器人来简化跑团操作、记录跑团日志，也可以使用其他人已经搭建好的“公骰”
+
+常见的跑团机器人有海豹骰和溯洄骰，海豹的文档和支持信息要多一些。为了稳定性，我在自己服务器上搭建了一个，用的还不错。自己搭建有一个好处，即使被QQ打掉线了跑团log也不需要找骰主要，自己从后台拿就行
+
+![image.png](https://img.055933.xyz/file/1783862186292_image.png)
+
+![image.png](https://img.055933.xyz/file/1783862223980_image.png)
+
+## 说点什么
+TaiwindCSS的温习很成功，熟悉了很多之前没注意到细节。TW本质还是CSS，写的慢就是对CSS的理解慢、转换慢，越熟悉写的就越快。AI时代TW是很好的原子化工具
+
+Neovim的AI改造也应该提上日程了
+
+下载了两个Steam上的专注软件，都很喜欢，一个是魔法研究，一个是放松时光，下周来好好讲讲吧。已经陪伴了过了一周，专注软件以往给我的印象都是一个冷硬的工具，高效但冷酷，容易开始难以坚持，像这样一个没有强迫性的专注工具，给了我完全不同的感受，一种另类的「陪伴」，真的很有意思。推荐大家也都试一下
+
+::video-bilibili{id=BV1bHBxBmECW}
+
+![image.png](https://img.055933.xyz/file/1783864249450_image.png)
+![image.png](https://img.055933.xyz/file/1783864272856_image.png)
