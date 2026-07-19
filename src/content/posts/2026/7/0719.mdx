@@ -1,0 +1,95 @@
+---
+author: coyoteshkw
+pubDatetime: 2026-07-19
+title: 2026 第29周 - 复活的宠物会写假数据吗
+draft: false
+tags: ["weekly"]
+description: 阳光洒肩头，恍若自由人
+---
+
+import Carousel from "@/components/Carousel.astro";
+
+## 本周做了什么
+- 温习了如何使用mockjs制造更高级的假数据
+- 温习Less和Scss语法
+- 详细对比Typescript常用的interface/type/class的区别并做笔记
+- 利用mockjs快速制作echarts可视化图表
+- 为MC服务器制作了一个宠物模组，让宠物在绑定后可以在床上重生，并支持游荡功能
+  	- 尚在开发中，还没有完全稳定下来！不过目前已经可用了
+- 为steamdeck-keyboard添加了新的数字栏和小箭头区，现在更好用了
+- 迁移了sealdice海豹骰到测试版
+
+## 收集的资源
+
+### [Rubik](https://fonts.google.com/specimen/Rubik?query=google) - Google Fonts
+一款圆润舒适的英文字体，博客长时间使用Paper主题默认的Google Sans Code，但它和系统默认非衬线中文字体的搭配看久了有点不协调，于是找到了这一款
+
+![image.png](https://img.055933.xyz/file/1784467087295_image.png)
+
+![image.png](https://img.055933.xyz/file/1784472238542_image.png)
+
+### [Handy Screenshot](https://www.ohhandy.com/) - 方便强大的浏览器截图工具
+
+[Snipaste](https://weekly.coyoteshkw.com/posts/2026/6/0614/#snipaste---%E7%AE%80%E5%8D%95%E5%BC%BA%E5%A4%A7%E7%9A%84%E5%9B%BE%E7%89%87%E5%B7%A5%E5%85%B7)显然是优秀到不能再优秀的截图工具，但是在使用轮播图组件时，放进去大小不一的截图显然不是个好主意。无论是把图片缩放还是保持原样，都很难保持显示效果的美观
+
+![image.png](https://img.055933.xyz/file/1784472859617_image.png)
+
+![image.png](https://img.055933.xyz/file/1784472973134_image.png)
+
+所以如果我决定使用轮播图组件，就会尽量保持截图的图片大小一致，用Snipaste做这个不太顺手。**「如果能在浏览器内一键截图，不就一定能保持图片大小一致了吗。」** 抱着这样的心态，找到了Handy Screenshot
+
+其貌不扬，没有其他截图工具抢着添加的视频录制功能，但是截图快捷键合理、编辑器功能不花钱且功能够用。
+
+<Carousel dot-placement="bottom">
+  <img src="https://img.055933.xyz/file/1784473334532_image.png" alt="截图1" />
+  <img src="https://img.055933.xyz/file/1784473339143_image.png" alt="截图2" />
+  <img src="https://img.055933.xyz/file/1784473352256_image.png" alt="截图3" />
+</Carousel>
+
+工作流也很简单：
+
+1. 点击拓展图标，将「截图后」选项改成「复制」
+2. 点击截图按钮 → 按空格 → 打开图床粘贴
+3. 如果是需要简短编辑的图片 → 将「截图后」改成「在编辑器中打开」
+4. 不需要轮播图的直接用snipaste截图
+
+### [Astro Editor](https://github.com/dannysmith/astro-editor) - 原生MacOS MD编辑器，但为Astro写作而做
+
+和[MarkEdit](https://weekly.coyoteshkw.com/posts/2026/6/0621/#markedit---mac%E5%8E%9F%E7%94%9Fmd%E5%BA%94%E7%94%A8)很像，但是专门为Astro做了适配。如果没有减轻电脑压力的需求，专门开一个这个写Astro博客就够了
+
+会自动识别Frontmatter配置项，虽然不是很必要但也挺好的
+
+![image.png](https://img.055933.xyz/file/1784475237009_image.png)
+
+![image.png](https://img.055933.xyz/file/1784475347750_image.png)
+
+### [容器查询给设计带来的变化](https://fedev.cn/css/container-queries-for-design.html) - 好文推荐
+
+一篇四年前由作者大漠写的文章，解决了困扰我很久的容器查询问题
+
+在图文并茂方面做到了极致，并附带直接的codepen演示，即使是再白的小白，也可能看懂他想表达的东西
+
+以下部分是我写的笔记，以后可能会单开一个NOTES栏目专门放这些零碎的个人笔记：
+
+在学tailwindcss的时候看到了容器查询，一直以来对这个的了解都很浅薄，今天认真查了一篇文章：https://fedev.cn/css/container-queries-for-design.html
+
+传统的媒体查询设计，根据浏览器的宽度不同来改变网页样式(除了宽度也可以监测别的)，有时候会出现，设计师设计的时候应该有至少四个卡片，但上线的时候却还没有的情况，导致单卡片样式很尴尬，大概率会出现一个巨大的卡片，老板看了心肌梗塞
+
+而如果使用容器查询，即使只有一张卡片，也可以根据父容器甚至祖父容器的宽度来判断卡片的大小，解决了我之前看到巨大卡片多喝水的痛点
+
+而且它也导致一个组件的通用性更强，有些组件可能在设计时定义了断点情况，如果和现有项目的设计不同，会需要单独调整，而使用容器查询，卡片的样式将更加精确和可预测
+
+常见用例：
+- 搜索框根据宽度显示按钮、搜索栏、搜索栏图标
+- 导航栏顶栏宽窄屏幕实现不同效果(这个一般拿媒体查询做)
+- 分页组件
+- 侧边栏，可以根据整体宽度来决定侧边栏是否收缩
+
+非常推荐这篇文章，写的非常好，图文并茂
+
+还让我发现了codepen组件好像真的很有用…不过如果用Astro的话，直接写mdx就可以了？
+
+## 说点什么
+做了一些工作，但有几天又有几分倦怠，但坚持了下来
+
+关于这个模组也很有意思，一开始不想重复造轮子，心想这样的mod应该社区到处都是，没想到并没有几个，要么是太怪了要么是宠物直接无敌，下了一个pet-home它的游荡功能也没有生效，于是在拖了好一段时间后决定自己做，和DeepSeek Pro低山臭水遇知音，重生功能写的很快，但游荡功能简直是一百个bug集合体，一点一点排除掉，一点一点修改寻路，终于到了可用的状态
