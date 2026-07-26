@@ -1,0 +1,108 @@
+---
+author: coyoteshkw
+pubDatetime: 2026-07-27
+title: 2026 第30周 - 在阳光下行走
+draft: false
+tags: ["weekly", "minecraft", "世界杯", "steamdeck", "前端", "博客"]
+description: TPS11，MTPS80，附加一个微笑
+---
+
+import DownloadButton from "@/components/DownloadButton.astro"
+
+# Week29周记
+
+## 本周做了什么
+- 写了篇世界杯与梅西的[观后感](https://coyoteshkw.com/posts/essay/world-cup-messi/)
+- 写了篇[海豹骰搭建与迁移教程](https://coyoteshkw.com/posts/tech-play/sealdice-deploy/)，不写总忘，忘了就踩一样的坑，嗨呀
+- 对MC服务器进行了一些更新，并给自己添置了一些好用的纯客户端模组，顺手给一个开源mod降了降版本给我们服务器用
+- 花了大量时间~~哀嚎~~思考是什么在吃掉我们的服务器延迟(TODO 此处应该有一张10TPS延迟的图片)
+- 更新了[steamdeck-keyboard](https://github.com/coyoteshkw/steamdeck-mc-screen-keyboard)模组，根据实际情况补齐了小键盘区与MC常见符号
+- 推进了博客网课的进度与express.js的温习
+- 对之后如何改进博客和周记写了一个设想，但要等到实际发现「真的急需」才会实装
+
+### MC卡顿大吐槽
+这两周服务器经历了一场史无前例的卡顿，且毫无原因。TPS最低几乎降到10......但是不是“腐竹我忘关刷沙机”那种卡顿，只是打开箱子会卡一秒钟罢了，于是一直忍，忍到忍无可忍用spark和observable检查，把村民全都方块化，服务器的TPS还是没能回到20
+
+![image.png](https://img.055933.xyz/file/1785084719525_image.png)
+
+现在服务器的延迟维持在17左右，勉强能用，只能先这样了，后续再排查。
+
+### steamdeck keyboard更新
+不然说人要在实践中学习呢
+
+- 真的开始使用SD键盘mod输入指令的时候发现我没写方向键
+- 写了方向键发现为了给括号腾位置把O键和P键的大写给整没了
+- 发现没法打`tp`指令因为没有数字键
+- 写了数字键发现因为拟真布局了，把之前的MC常见符号给弄没了
+- 全改好之后，回车键↩︎的位置太小了，想把右shift去掉改成`↲`形状回车，遭遇滑铁卢，最后改成了两个回车，反正都是回车
+
+经历了以上痛苦之后终于发布了[0.1.3版本](https://github.com/coyoteshkw/steamdeck-mc-screen-keyboard/releases)
+
+<DownloadButton ref="https://github.com/coyoteshkw/steamdeck-mc-screen-keyboard/releases/download/v0.1.3/steamdeckkeyboard-0.1.3.jar" filename="steamdeckkeyboard-0.1.3.jar"/>
+
+![image.png](https://img.055933.xyz/file/1785086239453_image.png)
+
+![image.png](https://img.055933.xyz/file/1785086269720_image.png)
+
+## 收集的资源
+
+### [Vuetify —— 一个 Vue 的组件框架](https://vuetifyjs.com/zh-Hans/)
+
+很漂亮的一个MD风格Vue组件！有些年代了，但是仍然有自己的风味。看惯了element-plus的那套的话，不妨试试
+
+![image.png](https://img.055933.xyz/file/1785060348674_image.png)
+
+### [ITHYA: magic studies](https://steamdb.info/app/3330250/screenshots/) - 陪伴专注软件
+
+从接触到电子产品开始，我对专注软件的需求就从未断过。但我要承认——目前最喜欢也最有用的，其实是软件非强制需求的CUBI计时器
+
+![我的CUBI](https://img.055933.xyz/file/1785060687835_IMG_20260726_181029.jpg)
+
+它在设置完成后可以长时间脱离软件使用，用电池也代表它续航很长，作者的方法论很优秀，唯二的问题可能一个是它有点大带出门还是不太好意思，另一个是**我没在用**
+
+无论多么优秀的软件、硬件、方法论，没有在用，那都白搭。它是我很好的随机专注软件，但这不能克服不想去专注的这种心理原因，而且它给人强烈的「考研党」「考公党」标签，真实的使用场景下一个人如果只是想在上班的间隙提升自己/给自己的加班定个时，弄个这个未免显得很命苦...
+
+于是在我接触到这种陪伴型软件的那一刻我就爱上了它们。我从[小黑盒上的这篇文章](https://api.xiaoheihe.cn/v3/bbs/app/api/web/share?h_camp=link&h_src=YXBwX3NoYXJl&link_id=85de721c33e1)得知了接下来我要介绍的两个应用，并且至今仍然在使用
+
+魔法研究给人的感觉更像是「干事的」软件，主角和我们之间没有互动，她是一名远道而来的魔法师，日常就是在这所城镇学习、闲逛，年复一年。而我们则“假装”自己是这名魔法师，在美妙的音乐中仿佛有一瞬间真的到达了那个奇幻的魔法世界
+
+![ss_b80fbb6a8de56bb619dc68ef94e6789c79dd1eba.jpg](https://img.055933.xyz/file/1785048988990_ss_b80fbb6a8de56bb619dc68ef94e6789c79dd1eba.jpg)
+
+![ss_fd4c2852f01fabd605af58e338f7c581f32ddf12.jpg](https://img.055933.xyz/file/1785049044122_ss_fd4c2852f01fabd605af58e338f7c581f32ddf12.jpg)
+
+![ss_6ae735bd036e133a74eff9061d32d15c65229267.jpg](https://img.055933.xyz/file/1785058350687_ss_6ae735bd036e133a74eff9061d32d15c65229267.jpg)
+
+![ss_8452d15411238ae9f8c882cdbc35771501dd9763.jpg](https://img.055933.xyz/file/1785058388051_ss_8452d15411238ae9f8c882cdbc35771501dd9763.jpg)
+
+基础功能齐全，正计时倒计时循环待办日记都有，音乐绝赞(可以切换原声碟我好久没发现)，最喜欢主角在一些多人场合，看着车水马龙自己悠闲地喝上一口咖啡干点活儿，真惬意
+
+总结：
+
+- 优点：干扰性低、功能全、性能占用低、无心理负担(暂停或失败无任何负反馈)
+- 缺点：干扰性低所以陪伴感相对弱，更依赖人的主观想象去带动；原声带很多但必须手动切而不是一口气全听了
+
+### [Chill with You Lo-Fi Story](https://steamdb.info/app/3548580/screenshots/) - 聪音可爱捏
+
+和魔法研究相比，聪音就有名地多。谁不想和一只可爱的女孩一起专注呢？
+
+![ss_3a0d564232b71d6060d36b792d29b62999bf65fe.jpg](https://img.055933.xyz/file/1785058667582_ss_3a0d564232b71d6060d36b792d29b62999bf65fe.jpg)
+
+和魔法研究不同，放松时光里我们是以一个「直播学习协作者」的身份加入的，所以和游戏实际主角「聪音」的互动是一大卖点。专注到一定的时长会触发和聪音的聊天剧情并解锁一些新的装饰要素，但不会喧宾夺主
+
+功能和魔法研究一样齐全(注：我真的很想吐槽这两个游戏至少在MacOS上的笔记功能字体真的很小，导致我没有一点兴趣在里面做笔记)，UI我觉得比魔法研究好看些，这个就见仁见智吧
+
+自带的音乐虽然很好听但是很少，听个几天就哇重复率真的很高，想要多的只好外部导入，相比之下魔法研究的BGM多不少
+
+8G电脑的修养，不得不提的放松时光占内存不小，为了减少性能损耗我把不看窗口时的帧率调的很低，窗口也改成了只有四分之一大小，用损失沉浸感的方式换性能优化。只希望他们官方之后还打算做一做性能优化了，虽然我觉得可能性不大
+
+总结：
+
+- 优点：陪伴感强，不孤单
+- 缺点：自带歌曲少，占内存高，因为更有陪伴感也就更有心智压力
+  	- 例如有一次学习实际没完成/部分任务算不上是学习只是想用个番茄钟计时，会觉得对不起聪音
+	- 所以这种场合我会重新使用CUBI
+
+## 说点什么
+写东西的速度变得快多了，但是要提醒自己不要带着完成任务的心态去做博客。
+
+于是开始回看之前的文章，并着手进行修订增补。如果不爱看笔记，至少对自己发表的东西有更多的爱！
