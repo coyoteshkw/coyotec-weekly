@@ -17,6 +17,7 @@ import BackToTopButton from "./_components/BackToTopButton.astro";
 import AdjacentPostNav from "./_components/AdjacentPostNav.astro";
 import TocFloating from "./_components/TocFloating.astro";
 import FancyboxGallery from "@/components/FancyboxGallery.astro";
+import Comments from "@/components/Comments.astro";
 import config from "@/config";
 
 export async function getStaticPaths() {
@@ -72,6 +73,7 @@ const {
   timezone,
   tags,
   hideEditPost,
+  comments,
 } = post.data;
 
 const { Content } = await render(post);
@@ -167,6 +169,8 @@ const ogImage = ogImageUrl
       <ShareLinks />
       <LikeButton pagePath={getPostUrl(post.id, post.filePath, locale).replace(/^\/|\/+$/g, "")} />
     </div>
+
+    {comments && <Comments />}
 
     <hr class="my-8 border-dashed" />
 

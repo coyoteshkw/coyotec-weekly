@@ -1,0 +1,67 @@
+<section class="mx-auto mt-12 w-full" id="giscus-container"></section>
+
+<script is:inline>
+  (function () {
+    let giscusLoadedOn = '';
+
+    function getTheme() {
+      return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    }
+
+    function sendThemeToGiscus() {
+      const iframe = document.querySelector('iframe.giscus-frame');
+      if (!iframe) return;
+      iframe.contentWindow.postMessage(
+        { giscus: { setConfig: { theme: getTheme() } } },
+        'https://giscus.app'
+      );
+    }
+
+    // 主题切换时同步
+    new MutationObserver(() => sendThemeToGiscus()).observe(
+      document.documentElement,
+      { attributes: true, attributeFilter: ['data-theme'] }
+    );
+
+    function loadGiscus() {
+      const container = document.getElementById('giscus-container');
+      if (!container) return;
+
+      // 同一页面不重复加载
+      const currentPath = window.location.pathname;
+      if (giscusLoadedOn === currentPath) return;
+      giscusLoadedOn = currentPath;
+
+      // 移除旧内容
+      const existingIframe = container.querySelector('iframe.giscus-frame');
+      if (existingIframe) existingIframe.remove();
+      const existingScript = container.querySelector('script[src*="giscus"]');
+      if (existingScript) existingScript.remove();
+
+      const script = document.createElement('script');
+      script.src = 'https://giscus.app/client.js';
+      script.setAttribute('data-repo', 'coyoteshkw/coyotec-weekly');
+      script.setAttribute('data-repo-id', 'R_kgDOSzZkAw');
+      script.setAttribute('data-category', 'Announcements');
+      script.setAttribute('data-category-id', 'DIC_kwDOSzZkA84DCENi');
+      script.setAttribute('data-mapping', 'pathname');
+      script.setAttribute('data-strict', '0');
+      script.setAttribute('data-reactions-enabled', '1');
+      script.setAttribute('data-emit-metadata', '0');
+      script.setAttribute('data-input-position', 'bottom');
+      script.setAttribute('data-theme', getTheme());
+      script.setAttribute('data-lang', 'zh-CN');
+      script.setAttribute('data-loading', 'lazy');
+      script.setAttribute('crossorigin', 'anonymous');
+      script.async = true;
+
+      container.appendChild(script);
+    }
+
+    loadGiscus();
+
+    document.addEventListener('astro:page-load', () => {
+      loadGiscus();
+    });
+  })();
+</script>
