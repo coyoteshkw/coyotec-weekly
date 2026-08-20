@@ -2,7 +2,7 @@ import { defineAstroPaperConfig } from "./src/types/config";
 
 export default defineAstroPaperConfig({
   site: {
-    url: "https://coyotec-weekly.pages.dev/",
+    url: "https://weekly.coyoteshkw.com/",
     title: "萨查周记",
     description: "每周的记录、资源和感悟",
     author: "coyoteshkw",
