@@ -53,4 +53,4 @@ pnpm note
 1. 本地或 Pages CMS 写好内容
 2. `git commit` + `git push`（或 Pages CMS 直接保存提交）
 3. Cloudflare Pages 自动构建部署
-4. 站点地址：[coyotec-weekly.pages.dev](https://coyotec-weekly.pages.dev)
+4. 站点地址：[weekly.coyoteshkw.com](https://weekly.coyoteshkw.com)
