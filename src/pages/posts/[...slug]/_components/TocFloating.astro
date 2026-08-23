@@ -19,20 +19,20 @@
     <nav id="toc-nav-desktop" class="text-sm leading-relaxed overflow-y-auto" style="max-height:50vh"></nav>
   </aside>
 
-  <!-- ===== 窄屏 FAB 按钮 ===== -->
+  <!-- ===== 窄屏 FAB 按钮（sm~xl 之间靠顶部，sm 以下仍底部） ===== -->
   <button
     id="toc-fab"
-    class="xl:hidden fixed end-4 bottom-[7rem] z-40 flex size-10 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-lg transition-opacity hover:opacity-90"
+    class="xl:hidden fixed end-0 z-40 flex h-12 w-14 items-center justify-center rounded-l-full bg-background pl-4 pr-2.5 text-muted-foreground border border-r-0 border-muted-foreground/40 shadow-lg transition-all duration-300 ease-out hover:opacity-90 bottom-[7rem] sm:top-[10rem] sm:bottom-auto"
     aria-label="打开目录"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="18"
-      height="18"
+      width="20"
+      height="20"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      stroke-width="2"
+      stroke-width="2.2"
       stroke-linecap="round"
       stroke-linejoin="round"
     >
@@ -45,14 +45,14 @@
     </svg>
   </button>
 
-  <!-- ===== 窄屏遮罩 + 底部面板 ===== -->
+  <!-- ===== 窄屏遮罩 + 抽屉 ===== -->
   <div
     id="toc-overlay"
     class="xl:hidden fixed inset-0 z-40 hidden bg-black/30 backdrop-blur-sm"
   >
     <aside
       id="toc-drawer"
-      class="animate-slide-up absolute inset-x-0 bottom-0 max-h-[70vh] overflow-y-auto rounded-t-2xl border-t border-border bg-background p-5 shadow-2xl"
+      class="absolute inset-x-0 bottom-0 max-h-[70vh] overflow-y-auto rounded-t-2xl border-t border-border bg-background p-5 shadow-2xl sm:inset-x-auto sm:bottom-auto sm:end-0 sm:top-[11rem] sm:max-h-[60vh] sm:w-72 sm:rounded-2xl sm:border"
     >
       <div class="mb-4 flex items-center justify-between">
         <span class="text-sm font-semibold text-foreground">目录</span>
@@ -87,8 +87,49 @@
     from { transform: translateY(100%); }
     to   { transform: translateY(0); }
   }
-  .animate-slide-up {
+  @keyframes slide-in-right {
+    from { transform: translateX(calc(100% + 1rem)); opacity: 0; }
+    to   { transform: translateX(0); opacity: 1; }
+  }
+
+  @keyframes slide-down-out {
+    from { transform: translateY(0); opacity: 1; }
+    to   { transform: translateY(100%); opacity: 0; }
+  }
+
+  @keyframes slide-out-right {
+    from { transform: translateX(0); opacity: 1; }
+    to   { transform: translateX(calc(100% + 1rem)); opacity: 0; }
+  }
+
+  /* 手机端：从底部滑入 */
+  #toc-drawer {
     animation: slide-up 0.25s ease-out;
+  }
+
+  /* sm 及以上：从右侧滑入 */
+  @media (min-width: 640px) {
+    #toc-drawer {
+      animation: slide-in-right 0.25s ease-out;
+    }
+  }
+
+  /* 退出动画（手机端） */
+  #toc-drawer.closing-mobile {
+    animation: slide-down-out 0.15s ease-in forwards;
+  }
+
+  /* 退出动画（sm 及以上） */
+  @media (min-width: 640px) {
+    #toc-drawer.closing-mobile {
+      animation: slide-out-right 0.15s ease-in forwards;
+    }
+  }
+
+  /* 目录按钮：手机端向下滚动时隐藏（滑出屏幕右缘） */
+  #toc-fab.toc-fab-hidden {
+    transform: translateX(calc(100% + 1rem));
+    opacity: 0;
   }
 
   /* ---- TOC 容器 ---- */
@@ -169,7 +210,7 @@
       tocHtml += `
         <li class="${isH3 ? "ml-3" : ""}">
           <a href="#${h.id}"
-            class="toc-link text-muted-foreground transition-colors hover:text-accent ${isH3 ? "text-xs" : ""}"
+            class="toc-link text-muted-foreground transition-colors hover:text-accent ${isH3 ? "text-[0.875rem]" : ""}"
             data-heading="${h.id}">
             ${text}
           </a>
@@ -232,17 +273,29 @@
     const closeBtn = document.getElementById("toc-close");
     const mobileLinks = mobile?.querySelectorAll("a");
 
+    const drawer = document.getElementById("toc-drawer");
+    let isClosing = false;
+
     function openToc() {
-      if (overlay) {
-        overlay.classList.remove("hidden");
-        document.body.style.overflow = "hidden";
-      }
+      if (!overlay) return;
+      overlay.classList.remove("hidden");
+      drawer?.classList.remove("closing-mobile");
+      document.body.style.overflow = "hidden";
     }
     function closeToc() {
-      if (overlay) {
-        overlay.classList.add("hidden");
-        document.body.style.overflow = "";
-      }
+      if (!overlay || isClosing) return;
+      isClosing = true;
+      drawer?.classList.add("closing-mobile");
+      drawer?.addEventListener(
+        "animationend",
+        () => {
+          overlay.classList.add("hidden");
+          drawer?.classList.remove("closing-mobile");
+          document.body.style.overflow = "";
+          isClosing = false;
+        },
+        { once: true }
+      );
     }
 
     fab?.addEventListener("click", openToc);
@@ -250,6 +303,47 @@
     overlay?.addEventListener("click", (e) => {
       if (e.target === overlay) closeToc();
     });
+
+    // ===== 手机端滚动时按钮显隐 =====
+    let lastScrollY = window.scrollY || window.pageYOffset || 0;
+    let fabHidden = false;
+    let ticking = false;
+
+    function handleScrollShowHide() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+
+        // 仅在手机宽度（<640px）下生效
+        if (window.innerWidth >= 640) {
+          if (fabHidden) {
+            fab?.classList.remove("toc-fab-hidden");
+            fabHidden = false;
+          }
+          return;
+        }
+
+        const currentScrollY = window.scrollY || window.pageYOffset || 0;
+        const delta = currentScrollY - lastScrollY;
+
+        // 向下滚动超过阈值且未隐藏时，隐藏按钮
+        if (delta > 10 && !fabHidden) {
+          fab?.classList.add("toc-fab-hidden");
+          fabHidden = true;
+        }
+        // 向上滚动超过阈值且已隐藏时，显示按钮
+        else if (delta < -10 && fabHidden) {
+          fab?.classList.remove("toc-fab-hidden");
+          fabHidden = false;
+        }
+
+        lastScrollY = currentScrollY;
+      });
+    }
+
+    window.addEventListener("scroll", handleScrollShowHide, { passive: true });
+    document.addEventListener("scroll", handleScrollShowHide, { passive: true, capture: true });
 
     mobileLinks?.forEach((a) => {
       a.addEventListener("click", (e) => {
