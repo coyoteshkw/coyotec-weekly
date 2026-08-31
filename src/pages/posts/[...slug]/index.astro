@@ -148,6 +148,28 @@ const ogImage = ogImageUrl
       <Content />
     </article>
 
+    <div class="mt-4 flex items-center gap-2 text-xs text-muted-foreground/70">
+      <span>如开头未特意注明，则本文由人类撰写，如有纰漏欢迎批评指正</span>
+      <a
+        href="https://notbyai.fyi"
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Written by Human, Not by AI"
+        class="notbyai-badge inline-flex shrink-0"
+      >
+        <img
+          src="/Written-By-Human-Not-By-AI-Badge-white.svg"
+          alt="Written by Human, Not by AI"
+          class="notbyai-badge-light h-4 w-auto"
+        />
+        <img
+          src="/Written-By-Human-Not-By-AI-Badge-black.svg"
+          alt="Written by Human, Not by AI"
+          class="notbyai-badge-dark h-4 w-auto"
+        />
+      </a>
+    </div>
+
     <hr class="my-8 border-dashed" />
 
     <EditPost class="sm:hidden" {hideEditPost} {post} />

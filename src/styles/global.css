@@ -119,3 +119,17 @@
   font-weight: 500;
   line-height: 1.5;
 }
+
+/* ---- Not By AI 徽章：白日显示 white 版本，深色模式显示 black 版本 ---- */
+.notbyai-badge-light {
+  display: inline-block;
+}
+.notbyai-badge-dark {
+  display: none;
+}
+[data-theme="dark"] .notbyai-badge-light {
+  display: none;
+}
+[data-theme="dark"] .notbyai-badge-dark {
+  display: inline-block;
+}
