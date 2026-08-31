@@ -1,5 +1,10 @@
 @import "tailwindcss";
 @import "./theme.css";
+
+/* 声明支持深浅色，阻止浏览器自动深色模式反相叠加 */
+:root {
+  color-scheme: light dark;
+}
 @import "./typography.css";
 @import "./github-card.css";
 @import "rehype-callouts/theme/obsidian";
