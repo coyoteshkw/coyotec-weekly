@@ -99,6 +99,8 @@ const rssHref = getRelativeLocaleUrl(
 
     <!-- Filled at runtime by theme.ts to match the current background colour -->
     <meta name="theme-color" content="" />
+    <!-- 声明网站自行处理深浅色，阻止浏览器自动深色模式反相叠加 -->
+    <meta name="color-scheme" content="light dark" />
 
     <!-- Extra head content injected by child layouts (e.g. JSON-LD, article meta) -->
     <slot name="head" />
