@@ -22,6 +22,7 @@ import remarkDirective from "remark-directive";
 import remarkDirectiveSugar from "remark-directive-sugar";
 import rehypeComponents from "rehype-components";
 import { parseDirectiveNode } from "./src/plugins/remark-directive-rehype";
+import { remarkTermDirective } from "./src/plugins/remark-term-directive";
 import { GithubCardComponent } from "./src/plugins/rehype-component-github-card.mjs";
 import config from "./astro-paper.config";
 
@@ -47,6 +48,7 @@ export default defineConfig({
         remarkDirective,
         parseDirectiveNode,
         [remarkDirectiveSugar, { link: { faviconSourceUrl: "https://faviconsnap.com/api/favicon?url={domain}" } }],
+        remarkTermDirective,
         remarkToc,
         remarkCjkSpacing,
         [remarkCollapse, { test: "Table of contents" }],
