@@ -1,0 +1,31 @@
+---
+/**
+ * 注解（Term）组件
+ *
+ * 与 remark 指令 `:term[术语]{annotation=注解}` 渲染结果一致，
+ * 供 MDX 引入使用，支持纯文本与富文本两种注解方式。
+ *
+ * 纯文本:
+ *   import Term from "@/components/Term.astro";
+ *   <Term annotation="这是注解">术语</Term>
+ *
+ * 富文本（用 annotation slot）:
+ *   import Term from "@/components/Term.astro";
+ *   <Term>
+ *     术语
+ *     <Fragment slot="annotation">这是<b>富文本</b>注解，含 <a href="...">链接</a></Fragment>
+ *   </Term>
+ *
+ * 复用全局的 .term / .term-tooltip 样式与 term-tooltip 交互脚本。
+ */
+type Props = {
+  /** 注解内容（纯文本），可选；若未提供则用 annotation slot */
+  annotation?: string;
+  /** 可选，附加的 class */
+  class?: string;
+};
+
+const { annotation, class: className = "" } = Astro.props;
+---
+
+<span class:list={["term", className]} data-annotation={annotation}><slot />{/* 富文本注解（可选） */}<span class="term-annotation-html" hidden><slot name="annotation" /></span></span>

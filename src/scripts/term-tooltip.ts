@@ -52,8 +52,12 @@ function positionTooltip(term: HTMLElement, tooltip: HTMLElement) {
 }
 
 function openTooltip(term: HTMLElement) {
-  const annotation = term.getAttribute("data-annotation");
-  if (!annotation) return;
+  // 优先读富文本注解（.term-annotation-html），fallback 到 data-annotation 纯文本
+  const richEl = term.querySelector<HTMLElement>(".term-annotation-html");
+  const richHtml = richEl?.innerHTML?.trim();
+  const plainText = term.getAttribute("data-annotation");
+
+  if (!richHtml && !plainText) return;
 
   // 如果已经有 tooltip 且是同一个 term，关闭
   if (tooltipEl && activeTerm === term) {
@@ -65,7 +69,11 @@ function openTooltip(term: HTMLElement) {
 
   tooltipEl = document.createElement("div");
   tooltipEl.className = "term-tooltip";
-  tooltipEl.textContent = annotation;
+  if (richHtml) {
+    tooltipEl.innerHTML = richHtml;
+  } else if (plainText) {
+    tooltipEl.textContent = plainText;
+  }
   document.body.appendChild(tooltipEl);
 
   activeTerm = term;
