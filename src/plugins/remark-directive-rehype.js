@@ -57,10 +57,10 @@ export function parseDirectiveNode() {
           node.data.hName = "blockquote";
           delete node.data.hProperties;
         } else {
-          // 只处理 :::github 指令，remark-directive-sugar 处理其余
+          // 只处理 ::github 指令，remark-directive-sugar 处理其余
           if (name !== "github") return;
 
-          // :::github → 转为自定义 <github> 标签给 rehype-components
+          // ::github → 转为自定义 <github> 标签给 rehype-components
           const data = node.data || {};
           node.data = data;
           node.attributes = node.attributes || {};

@@ -4,7 +4,7 @@
  * 移植自 Firefly 主题 (src/plugins/rehype-component-github-card.mjs)
  * 原作使用 Stylus + CSS 变量，此处改为 Tailwind 4 + CSS 变量适配明暗主题
  *
- * 用法: 在 .md/.mdx 中写 :::github{repo="owner/repo"}
+ * 用法: 在 .md/.mdx 中写 ::github{repo="owner/repo"}（两冒号，leaf 指令）
  *
  * 数据来源: 客户端 fetch GitHub REST API，无构建时依赖
  * - 头像: data.owner.avatar_url
@@ -20,7 +20,7 @@ import { h } from "hastscript";
 export function GithubCardComponent(properties, children) {
   if (Array.isArray(children) && children.length !== 0)
     return h("div", { class: "hidden" }, [
-      'Invalid directive. ("github" directive must be leaf type :::github{repo="owner/repo"})',
+      'Invalid directive. ("github" directive must be leaf type ::github{repo="owner/repo"})',
     ]);
 
   if (!properties.repo?.includes("/"))
@@ -40,27 +40,63 @@ export function GithubCardComponent(properties, children) {
 
   const nScript = h(
     `script#${cardUuid}-script`,
-    { type: "text/javascript", defer: true },
+    { type: "text/javascript" },
     `
-fetch('https://api.github.com/repos/${repo}', { referrerPolicy: "no-referrer" })
-  .then(r => r.json())
-  .then(data => {
-    var descEl = document.getElementById('${cardUuid}-description');
-    if (descEl) descEl.innerText = (data.description || '').replace(/:[a-zA-Z0-9_]+:/g, '') || "No description";
-    var langEl = document.getElementById('${cardUuid}-language');
-    if (langEl) langEl.innerText = data.language || '';
-    document.getElementById('${cardUuid}-forks').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.forks).replaceAll("\\u202f", '');
-    document.getElementById('${cardUuid}-stars').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.stargazers_count).replaceAll("\\u202f", '');
-    var ava = document.getElementById('${cardUuid}-avatar');
-    if (ava) { ava.style.backgroundImage = 'url(' + data.owner.avatar_url + '&s=40' + ')'; ava.classList.add('loaded'); }
-    document.getElementById('${cardUuid}-license').innerText = (data.license && data.license.spdx_id) || "no-license";
-    var card = document.getElementById('${cardUuid}-card');
-    if (card) card.classList.remove("fetch-waiting");
-  }).catch(function() {
-    var c = document.getElementById('${cardUuid}-card');
-    if (c) c.classList.add("fetch-error");
-    console.warn("[GH-CARD] Failed to load card for ${repo}");
-  });
+(function () {
+  var card = document.getElementById('${cardUuid}-card');
+  if (!card) return;
+
+  var uid = '${cardUuid}';
+  function el(id) { return document.getElementById(id); }
+  function setText(id, text) { var e = el(id); if (e) e.innerText = text; }
+  function fail() {
+    card.classList.remove("fetch-waiting");
+    card.classList.add("fetch-error");
+    setText(uid + '-description', '无法加载仓库信息，点击前往 GitHub 查看');
+  }
+
+  try {
+    var controller = new AbortController();
+    var timer = setTimeout(function () { controller.abort(); }, 6000);
+
+    fetch('https://api.github.com/repos/${repo}', {
+      referrerPolicy: 'no-referrer',
+      signal: controller.signal
+    })
+      .then(function (r) {
+        clearTimeout(timer);
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function (data) {
+        setText(uid + '-description', (data.description || '').replace(/:[a-zA-Z0-9_]+:/g, '') || 'No description');
+        setText(uid + '-language', data.language || '');
+
+        var compact = function (n) {
+          try { return Intl.NumberFormat('en-us', { notation: 'compact', maximumFractionDigits: 1 }).format(n).replaceAll('\u202f', ''); }
+          catch (e) { return String(n ?? '0'); }
+        };
+        setText(uid + '-forks', compact(data.forks));
+        setText(uid + '-stars', compact(data.stargazers_count));
+        setText(uid + '-license', (data.license && data.license.spdx_id) || 'no-license');
+
+        var ava = el(uid + '-avatar');
+        if (ava) {
+          ava.style.backgroundImage = 'url(' + data.owner.avatar_url + '&s=40)';
+          ava.classList.add('loaded');
+        }
+
+        card.classList.remove('fetch-waiting');
+      })
+      .catch(function (err) {
+        clearTimeout(timer);
+        fail();
+        if (err.name !== 'AbortError') console.warn('[GH-CARD] Failed to load ${repo}:', err);
+      });
+  } catch (e) {
+    fail();
+  }
+})();
     `,
   );
 
