@@ -14,7 +14,15 @@
 /* Obsidian callout theme uses .dark, but we use data-theme="dark".
    Must be outside @layer — unlayered Obsidian CSS would otherwise win. */
 .callout {
+  /* 解决callout在深色模式下颜色不正确的问题 */
   mix-blend-mode: normal;
+  .callout-content {
+    font-size: 15px;
+  }
+  /* callout内部的无序列表不跟随博客整体配色 */
+  li::marker {
+    @apply text-current
+  }
 }
 
 @layer base {
