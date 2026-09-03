@@ -34,14 +34,8 @@ function spaceText(str: string): string {
   return result;
 }
 
-const THIN_SPACE = "\u2009";
 // inlineCode 与其两侧文本之间用普通空格（更明显）
 const CODE_SPACE = " ";
-
-/** 判断两个字符之间是否需要加空格（text 内部用，严格字母数字） */
-function needsSpace(a: string, b: string): boolean {
-  return (isCjkSide(a) && LATIN.test(b)) || (LATIN.test(a) && isCjkSide(b));
-}
 
 /** inlineCode 边界判断：代码首/尾字符包含半角符号也算“代码侧” */
 function needsCodeSpace(a: string, b: string): boolean {

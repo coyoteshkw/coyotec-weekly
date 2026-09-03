@@ -16,8 +16,12 @@
  * />
  * ```
  *
+ * 下载策略：
+ * 1. 优先 fetch 内容转 Blob 触发下载（对支持 CORS 的跨域链接如 raw.githubusercontent.com 有效）
+ * 2. fetch 失败时回退到 download 属性（同源有效）或直接导航（跨域无 CORS 时）
+ *
  * @prop {string}  href     - 下载链接（必填）
- * @prop {string}  filename - download 属性，指定保存的文件名（可选，不填则用 URL 默认文件名）
+ * @prop {string}  filename - 指定保存的文件名（可选）
  */
 export interface Props {
   href: string;
@@ -25,12 +29,20 @@ export interface Props {
 }
 
 const { href, filename } = Astro.props;
+
+// 从 URL 提取默认文件名（fetch 下载时用，避免文件名丢失）
+const defaultFilename =
+  filename ??
+  href.split("/").pop()?.split("?")[0]?.split("#")[0] ??
+  "download";
 ---
 
 <a
   href={href}
   download={filename}
-  class="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white no-underline shadow-md shadow-orange-500/25 transition-all duration-300 hover:bg-orange-600 hover:text-white hover:shadow-lg hover:shadow-orange-500/35 hover:scale-105 active:scale-95"
+  data-download-href={href}
+  data-download-filename={defaultFilename}
+  class="download-btn inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white no-underline shadow-md shadow-orange-500/25 transition-all duration-300 hover:bg-orange-600 hover:text-white hover:shadow-lg hover:shadow-orange-500/35 hover:scale-105 active:scale-95"
 >
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -48,3 +60,45 @@ const { href, filename } = Astro.props;
   </svg>
   下载
 </a>
+
+<script>
+  // 点击时优先 fetch + Blob 下载，强制跨域文件也走下载流程
+  function initDownloadButtons() {
+    document.querySelectorAll<HTMLAnchorElement>(".download-btn").forEach((btn) => {
+      if (btn.dataset.downloadBound === "1") return;
+      btn.dataset.downloadBound = "1";
+
+      btn.addEventListener("click", async (e) => {
+        const href = btn.dataset.downloadHref;
+        const name = btn.dataset.downloadFilename ?? "download";
+        if (!href) return;
+
+        // 同源且带 download 属性时，浏览器原生已能下载，不干预
+        const isSameOrigin = new URL(href, window.location.href).origin === window.location.origin;
+        if (isSameOrigin && btn.hasAttribute("download")) return;
+
+        // 跨域资源：尝试 fetch + Blob 下载
+        e.preventDefault();
+        try {
+          const res = await fetch(href, { referrerPolicy: "no-referrer" });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = name;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+        } catch {
+          // fetch 失败（CORS 或网络），回退：直接在新标签打开，保留 download 属性尽力而为
+          window.open(href, "_blank", "noopener");
+        }
+      });
+    });
+  }
+
+  initDownloadButtons();
+  document.addEventListener("astro:after-swap", initDownloadButtons);
+</script>

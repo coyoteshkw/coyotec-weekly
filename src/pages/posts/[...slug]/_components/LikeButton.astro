@@ -11,10 +11,10 @@
  * @example
  * <LikeButton pagePath="posts/games/minecraft" />
  */
-type Props = {
+export interface Props {
   /** 文章唯一路径标识，由父组件在构建时传入 */
   pagePath: string;
-};
+}
 
 const { pagePath } = Astro.props;
 ---
