@@ -23,7 +23,8 @@
     ul,
     figcaption,
     table,
-    code {
+    code,
+    u {
       @apply text-foreground;
     }
 
@@ -63,7 +64,7 @@
     }
 
     code {
-      @apply bg-muted/75 text-foreground rounded p-1 wrap-break-word before:content-none after:content-none;
+      @apply bg-muted/85 text-foreground rounded p-1 wrap-break-word before:content-none after:content-none;
     }
 
     .astro-code code {
@@ -84,6 +85,23 @@
 
     pre {
       @apply focus-visible:outline-accent focus-visible:border-transparent focus-visible:outline-2 focus-visible:outline-dashed;
+    }
+
+    u {
+      @apply underline-offset-4;
+    }
+
+    u[title] {
+      @apply cursor-help decoration-double underline-offset-3 decoration-1;
+    }
+
+    .em {
+      -webkit-emphasis-style: filled circle;
+      -webkit-emphasis-position: under right;
+      -webkit-emphasis-color: var(--color-foreground);
+      text-emphasis: filled circle;
+      text-emphasis-color: var(--color-foreground);
+      text-emphasis-position: under right;
     }
   }
 
