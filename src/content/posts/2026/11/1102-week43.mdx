@@ -1,0 +1,128 @@
+---
+pubDatetime: 2026-11-01
+title: 2026 第43周 - 高产
+draft: false
+tags:
+  - weekly
+  - 终端
+  - 办公软件
+  - 桌宠
+  - 音乐
+description: Lua特别坏
+---
+
+## 也许做了些什么
+
+- 玩了很多新应用哦
+- 测试了很多网页版圣经，读了(相对来说)很多的圣经
+- 写了很多文章，至少是很多预备文章，继续高产！
+- 重新下了kickstar.nvim，花了些时间研究Lua和Nvim-Lua，写了篇[文章](https://coyoteshkw.com/posts/programming/nvim-lua-guide-learn-notes/)
+  - Nvim，好复杂
+- 解决了SteamDeck上的疑难杂症，现在可以正常使用键盘了舒服了
+  - 还下载了些插件，善用Github的Tag功能啊
+- 我自己发布的SD插件得到了第一个issue，连忙进行了修复
+- 时隔一月装修了博客，添加了一些小功能
+
+### 博客
+
+速记功能上线，现在可以快速记录一些东西了，而且还支持打Tag，一晚构思一晚上搞定，高效率！
+
+由于顶栏的菜单实在是站不下这么多选项，用Tabler图标把所有选项都换成图标了，手机端保持不变
+
+![image.png](https://img.055933.xyz/file/1793605510235_image.png)
+
+最近国际网络状况实在不怎么好，有时候我都进不去博客，为了提示，在点击链接2s内无跳转会显示一个加载圈圈
+
+![chrome-capture-2026-11-02.gif](https://img.055933.xyz/file/1793605845946_chrome-capture-2026-11-02.gif)
+
+还在考虑把周记转移到博客本体来，但仍旧没下定决心
+
+## 推荐点东西
+
+### [Ely Terminal](https://github.com/ELY-Open-Source/ELYTerminal)
+
+国人大佬作品，精巧的终端，三端支持，Rust编写。Mac版仅12.8MB，和某些巨型终端形成鲜明对比(某些Electron大作你在听吗？)
+
+![image.png](https://img.055933.xyz/file/1793555677102_image.png)
+
+功能上没有其他成熟终端完善，但是支持基本的多标签，还自带一个可爱的看板娘Ely，轻量级终端用来突然做一些小功能再合适不过了，特别是偶尔隔壁干活终端可能已经开了十几个标签面板在干活的时候
+
+<video autoplay muted loop playsinline style="max-width: 100%; border-radius: 8px;">
+	<source src="https://img.055933.xyz/file/1793556448114_output.mp4" type="video/mp4" />
+</video>
+
+比较有趣的是原生内嵌了一个Git面板和文件查看面板，看似没用实则很方便，用yazi或单纯ls遨游终端虽然极客但很累，Ely提供了一个简单的入口可以在发呆时回想起自己在感什么，还能查看最近的提交。以下是一段终端演示视频
+
+<video muted playsinline controls style="max-width: 100%; border-radius: 8px;">
+	<source src="https://img.055933.xyz/file/1793556812191_output.mp4" type="video/mp4" />
+  您的浏览器不支持视频播放
+</video>
+
+### [Ely Office](https://office.elygpui.com/)
+
+同作者还出了一些别的东西开源项目，例如现在这个全家桶
+
+支持WPS三件套、PDF浏览、邮箱、Git可视化、MD编辑器和Agent，Rust编写。全部下载下来只需800MB，可拆开单独下载
+
+![image.png](https://img.055933.xyz/file/1793601678800_image.png)
+
+UI也是同作者开源的GUI，界面都相当好看，但我下载了一个MD编辑器ElyMark测试，编辑时无法使用Mac常用编辑快捷键，所见即所得编辑器的反应速度也捉急，我觉得吧……还是未来可期状态，支持一下！
+
+### [MC桌宠](https://github.com/DLmember/Minecraft-Desktop-Pet)
+
+Win/Mac支持，设置项丰富，大小仅1MB，看懂的都哭了
+
+![image.png](https://img.055933.xyz/file/1793557845820_image.png)
+
+非常可爱！哎呀小东西怎么这么可爱呢
+
+部分功能展示，包括打字特效，偶尔的随机动作、挥手等，最新的Win版本还支持AI对话
+
+<video autoplay muted loop playsinline controls style="max-width: 100%; border-radius: 8px;">
+	<source src="https://img.055933.xyz/file/1793558103241_录屏2026-11-02_02.32.31.mp4" type="video/mp4" />
+  您的浏览器不支持视频播放
+</video>
+
+需要注意的是
+
+1. 设置中的`/p chat`虽然我不知道是什么意思，但启用后会在你写MD想要打井号的时候帮你换成`/p chat`，我那时候还以为我Vim配置坏了
+2. 不知为何内存占用很高，有时甚至高达45%，但实际体验下来并没有特别的发热等现象，原因不明
+
+### [MyGo音乐播放器](https://music.egoist.dev/)
+
+用Go和MyGo写成的网易云第三方客户端，小巧可用
+
+[MyGo](https://mygo.egoist.dev/)怎么真的是一个用Go写桌面端的框架啊，MyGo音乐播放器怎么真的是一个用MyGo写的播放器啊
+
+:::image-figure[左上角的五叹号私货也太明显了吧！]
+![image.png](https://img.055933.xyz/file/1793602528270_image.png)
+:::
+
+:::image-figure[整个界面的私货都太明显了吧！]
+![image.png](https://img.055933.xyz/file/1793602683954_image.png)
+:::
+
+官方推荐使用`install`脚本安装和更新，但也可以在官网直接下载，只有7MB，又在叹为观止
+
+```sh
+# linux/mac
+curl -fsSL https://github.com/egoist/mygo-cloudmusic/releases/latest/download/install.sh | sh
+# powershell
+irm https://github.com/egoist/mygo-cloudmusic/releases/latest/download/install.ps1 | iex
+```
+
+功能挺完善的，反正听个歌没什么问题。可惜我没有网易云会员的同时还有Apple Music的会员，我猜这个应该不支持看广告得会员时长吧（
+
+![image.png](https://img.055933.xyz/file/1793603308896_image.png)
+![image.png](https://img.055933.xyz/file/1793603334577_image.png)
+![2026-11-02 15.13.12.gif](https://img.055933.xyz/file/1793603650225_2026-11-02_15.13.12.gif)
+
+支持刘海灵动岛效果，播放音乐时在屏幕顶部显示一个播放器
+
+![image.png](https://img.055933.xyz/file/1793603853048_image.png)
+
+期待之后可以有桌面端的悬浮歌词？
+
+## 说点什么
+
+今日无话，眠之
