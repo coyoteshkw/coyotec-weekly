@@ -1,0 +1,65 @@
+---
+pubDatetime: 2026-11-08
+title: 2026 第44周 - Neovim好玩
+draft: false
+tags:
+  - weekly
+  - 终端
+  - SteamDeck
+  - 字体
+  - 图标
+  - 快捷短语
+description: Lua相对坏
+---
+
+## 做了些什么
+
+- 花了一整周研究Neovim!
+- 步入冬天，在太阳下晒晒，进行合成作用，吸收维生素D
+- 找到了在SteamDeck上直播的方式，直播通关了巴别塔
+
+### Neovim
+
+在写完Vim的那篇文章以后，我就一直想搬迁到Neovim。我坚持看完了(一大半)kickstart.nvim提供的`init.lua`文件，然后从头把被AI迁移过的个人nvim配置读完了
+
+之后就是插件配置，语法补全上还是继续用可靠的coc.nvim，语法高亮搭上了nvim-treesitter的快车，写作方面的插件也全面革新
+
+说到写作，这篇文章是用nvim + neovide写的(并且neovide闪退了一次，所以我重写了一次)，为了让nvim适合写作，真是花了好大的力气
+
+## 推荐点东西
+
+### [decky-prysm](https://github.com/hostsrc/decky-prysm)
+
+![image.png](https://img.055933.xyz/file/1794234809205_image.png)
+
+我一直想直播SteamDeck玩游戏，但我没有买专用的拓展坞，而且为了给朋友直播连一整串设备也有些本末倒置，decky商城里倒是有些插件可以在youtube和discord上直播，但肯定没有在腾讯会议上直播的...
+
+这个插件可以在游戏模式下把画面串流到局域网，然后捕捉浏览器画面即可直播，多方便啊，已然爱上
+
+### [Espanso](https://espanso.org/) - 文本拓展器
+
+![image.png](https://img.055933.xyz/file/1794236367815_image.png)
+
+Raycast在MacOS上可以兼任文本拓展功能，实现一些手机号码邮箱号码的快速输入，但raycast并非全平台支持，以后假如换用Windows或Linux就得重新找一个插件，既然如此不如找一个支持全平台的文本拓展器，最终选定Espanso
+
+Espanso在多年前我就用过一次，至今仍然在维护，并且有自己的[拓展市场](https://hub.espanso.org/search/)，可以下载其他人已经配置好的包，例如全应用可用的lorem输入、苹果键盘常用符号输入( )等等
+
+它还支持一定的高级功能，调用Python与AI通话之类，但我用不上
+
+### [Maple Mono](https://font.subf.dev/en/) - 开源免费字体
+
+![image.png](https://img.055933.xyz/file/1794236690194_image.png)
+
+我一直在用这个字体，至少半年吧。除了Nerd Font相关的字体图标不是等宽导致在nvim里用略微别扭，其他地方都很不错，也是少数支持中文的等宽字体
+
+最近发现它还加入了[中文字体CDN网站](https://chinese-font.netlify.app/zh-cn/cdn/)，蒸蒸日上
+
+### [tabler icons](https://tabler.io/icons?ref=tabler-icons.io)
+
+这是当前主题Astro Paper使用的图标库，非常圆润，但每个图标都结构清晰，很符合我的胃口
+
+![image.png](https://img.055933.xyz/file/1794236545368_image.png)
+
+## 说点什么
+
+neovide高压下不稳定啊你这家伙，害我重写一次
