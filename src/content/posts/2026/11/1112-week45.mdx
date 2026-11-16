@@ -1,0 +1,41 @@
+---
+pubDatetime: 2026-11-13
+title: 2026 第45周 - Neovim好玩
+draft: false
+tags:
+  - weekly
+  - Tmux
+description: Lua相对坏
+---
+
+## 做了些什么
+
+## 推荐点东西
+
+### [zellij](https://github.com/zellij-org/zellij) - Tmux替代品
+
+近期heder很火，但是那是Agent的事儿
+
+Kitty等多种终端都提供自己的终端窗口分割方式，但免不了面对关闭后总归要丢失的情况，Kitty出了自己的[session](https://sw.kovidgoyal.net/kitty/sessions/)功能，但太过极简，必须在启动前就预订好要保存的session文件名，而且中途往里加其他Tab还需要额外的指令
+
+Tmux老牌但如果只是偶尔想分割一下窗口，保存一下当前布局，有点用起来太累了，它是为了更简单又或者非常重要的任务准备的，所以我介绍zellij
+
+![image.png](https://img.055933.xyz/file/1794498525968_image.png)
+
+这是一个更傻瓜化的Tmux，你不用「背快捷键」就可以轻松使用。而且它还提供Web端，支持Mac/Linux平台
+
+它有两个问题：
+
+1. 在默认的模式下，它与Vim太容易撞快捷键了，`C-p`/`C-h`/`C-s`这种都是Vim的常用按键。我目前的解决方案是启用它的默认Lock模式，锁定状态下zellij不接收除了解锁键以外的按键。据说还有zellij-autolock这种检测到vim就自动Lock的插件，还有和vim-tmux-navigator一样的panel跳转插件
+2. 默认界面实用但是真丑啊...下载了美化插件后好看了但是又不实用了得老老实实背快捷键了😂
+
+这是我配置后的版本，比较贴近我配置过的Tmux了
+
+![image.png](https://img.055933.xyz/file/1794499693486_image.png)
+
+与此同时，这是我的Tmux：
+
+![image.png](https://img.055933.xyz/file/1794499804158_image.png)
+
+## 说点什么
+
